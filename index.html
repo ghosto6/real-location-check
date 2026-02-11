@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>📍 Real Location Check - Anti Fake GPS</title>
+    <title>📍 Smart Location Check</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
@@ -9,39 +9,49 @@
             max-width: 500px;
             margin: 20px auto;
             padding: 20px;
-            background: #f5f5f5;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
         }
         .container {
             background: white;
             padding: 25px;
             border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         h1 {
             color: #2D8CFF;
             text-align: center;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
         }
         .btn {
-            background: #2D8CFF;
+            background: linear-gradient(135deg, #2D8CFF 0%, #1A7AE6 100%);
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 16px;
-            border-radius: 8px;
+            padding: 18px;
+            font-size: 18px;
+            border-radius: 10px;
             cursor: pointer;
             width: 100%;
-            margin: 10px 0;
+            margin: 15px 0;
             font-weight: bold;
+            box-shadow: 0 4px 15px rgba(42, 139, 242, 0.3);
         }
         .btn:hover {
-            background: #1A7AE6;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(42, 139, 242, 0.4);
         }
         .result {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 10px;
+            margin-top: 25px;
+            padding: 25px;
+            border-radius: 12px;
             background: #f8f9fa;
             border-left: 5px solid #2D8CFF;
+            transition: all 0.3s ease;
         }
         .verified {
             background: #d4edda;
@@ -58,273 +68,553 @@
             border-color: #dc3545;
             color: #721c24;
         }
-        .status {
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
+        .status-box {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: bold;
         }
-        .green { background: #d4edda; color: #155724; }
-        .red { background: #f8d7da; color: #721c24; }
-        .yellow { background: #fff3cd; color: #856404; }
+        .good { background: #d4edda; color: #155724; }
+        .medium { background: #fff3cd; color: #856404; }
+        .bad { background: #f8d7da; color: #721c24; }
+        .info-box {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+            border-left: 4px solid #2D8CFF;
+        }
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        .metric-score {
+            font-weight: bold;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .score-good { background: #28a745; color: white; }
+        .score-medium { background: #ffc107; color: #212529; }
+        .score-bad { background: #dc3545; color: white; }
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 16px;
+            margin: 15px 0;
+            resize: vertical;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📍 REAL LOCATION CHECK</h1>
-        <p style="text-align: center; color: #666;">Detects and prevents fake GPS spoofing</p>
+        <h1>📍 SMART LOCATION VERIFICATION</h1>
+        <p class="subtitle">Intelligently detects fake GPS on normal phones</p>
         
-        <button class="btn" onclick="checkRealLocation()">
-            🔍 CHECK MY REAL LOCATION
+        <button class="btn" onclick="checkSmartLocation()">
+            🔍 VERIFY MY REAL LOCATION
         </button>
         
         <div id="status"></div>
         
         <div id="result"></div>
         
-        <div style="margin-top: 30px; padding: 15px; background: #e7f3ff; border-radius: 10px;">
-            <h3>🔒 How it detects fake GPS:</h3>
-            <ul>
-                <li>Compares GPS with IP location</li>
-                <li>Checks for VPN/Proxy connections</li>
-                <li>Verifies location consistency</li>
-                <li>Detects data center IPs</li>
-            </ul>
+        <div class="info-box">
+            <h3>🤖 Smart Detection Logic:</h3>
+            <p>• Understands normal GPS vs IP differences (20-100km OK)</p>
+            <p>• Detects impossible accuracy (0m = likely fake)</p>
+            <p>• Checks for VPN/Proxy masking</p>
+            <p>• Validates movement patterns</p>
         </div>
     </div>
 
     <script>
-    async function checkRealLocation() {
-        document.getElementById('status').innerHTML = 
-            '<div class="status yellow">🔄 Checking location... Verifying authenticity...</div>';
+    // Smart location verification that understands normal phone behavior
+    async function checkSmartLocation() {
+        showStatus('🔄 Analyzing location patterns...', 'info');
         
-        // Run all checks in parallel
-        const checks = await Promise.allSettled([
-            checkGPS(),
-            checkIPLocation(),
-            checkVPN(),
-            checkTimezone(),
-            checkSpeed()
-        ]);
-        
-        // Process results
-        let gpsLocation = null;
-        let ipLocation = null;
-        let isVPN = false;
-        let isSuspicious = false;
-        let warnings = [];
-        
-        checks.forEach((check, index) => {
-            if (check.status === 'fulfilled') {
-                const result = check.value;
-                
-                if (index === 0 && result.coords) { // GPS check
-                    gpsLocation = result.coords;
-                    if (result.suspicious) {
-                        warnings.push('GPS accuracy suspicious');
-                        isSuspicious = true;
-                    }
-                }
-                
-                if (index === 1 && result.coords) { // IP location
-                    ipLocation = result.coords;
-                    if (result.suspicious) {
-                        warnings.push('IP location suspicious');
-                        isSuspicious = true;
-                    }
-                }
-                
-                if (index === 2 && result.isVPN) { // VPN check
-                    isVPN = true;
-                    warnings.push('VPN/Proxy detected');
-                    isSuspicious = true;
-                }
-                
-                if (index === 4 && result.impossibleSpeed) { // Speed check
-                    warnings.push('Impossible movement detected');
-                    isSuspicious = true;
-                }
-            }
-        });
-        
-        // Compare GPS vs IP location
-        let distance = 0;
-        if (gpsLocation && ipLocation) {
-            distance = calculateDistance(
-                gpsLocation.lat, gpsLocation.lon,
-                ipLocation.lat, ipLocation.lon
-            );
-            
-            if (distance > 100000) { // More than 100km difference
-                warnings.push(`GPS and IP locations differ by ${Math.round(distance/1000)}km`);
-                isSuspicious = true;
-            }
-        }
-        
-        // Display results
-        displayResults(gpsLocation, ipLocation, isVPN, isSuspicious, warnings, distance);
-    }
-    
-    // Check 1: High-accuracy GPS
-    function checkGPS() {
-        return new Promise((resolve) => {
-            if (!navigator.geolocation) {
-                resolve({ suspicious: true, error: 'No GPS support' });
-                return;
-            }
-            
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const coords = {
-                        lat: position.coords.latitude,
-                        lon: position.coords.longitude,
-                        accuracy: position.coords.accuracy
-                    };
-                    
-                    // Check for suspicious GPS data
-                    let suspicious = false;
-                    if (coords.accuracy > 5000) suspicious = true; // >5km accuracy
-                    if (position.coords.altitude === 0) suspicious = true; // Often fake
-                    
-                    resolve({ 
-                        coords: coords, 
-                        suspicious: suspicious,
-                        accuracy: coords.accuracy 
-                    });
-                },
-                (error) => {
-                    resolve({ suspicious: true, error: error.message });
-                },
-                {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
-                }
-            );
-        });
-    }
-    
-    // Check 2: IP-based location
-    async function checkIPLocation() {
         try {
-            // Try multiple IP location services
-            const responses = await Promise.any([
-                fetch('https://ipapi.co/json/'),
-                fetch('https://ipinfo.io/json'),
-                fetch('https://geolocation-db.com/json/')
+            // Get multiple data points
+            const [gpsData, ipData, networkData, vpnCheck] = await Promise.all([
+                getSmartGPS(),
+                getSmartIPLocation(),
+                getNetworkInfo(),
+                checkForVPN()
             ]);
             
-            const data = await responses.json();
+            // Calculate trust score (0-100)
+            const trustScore = calculateTrustScore(gpsData, ipData, networkData, vpnCheck);
             
-            let lat, lon;
-            if (data.latitude && data.longitude) {
-                lat = data.latitude;
-                lon = data.longitude;
-            } else if (data.loc) {
-                [lat, lon] = data.loc.split(',');
-            }
+            // Determine if location is real
+            const isReal = trustScore >= 70;
+            const warnings = analyzeWarnings(gpsData, ipData, vpnCheck);
             
-            const coords = {
-                lat: parseFloat(lat) || 0,
-                lon: parseFloat(lon) || 0,
-                ip: data.ip,
-                org: data.org || data.isp || ''
-            };
-            
-            // Check for suspicious IP (VPN, hosting, etc.)
-            let suspicious = false;
-            const org = coords.org.toLowerCase();
-            if (org.includes('vpn') || 
-                org.includes('proxy') || 
-                org.includes('hosting') || 
-                org.includes('datacenter') ||
-                org.includes('amazon') ||
-                org.includes('google') ||
-                org.includes('microsoft') ||
-                org.includes('digitalocean')) {
-                suspicious = true;
-            }
-            
-            return { coords: coords, suspicious: suspicious, org: coords.org };
+            // Display smart results
+            displaySmartResults(gpsData, ipData, trustScore, isReal, warnings);
             
         } catch (error) {
-            return { suspicious: true, error: 'IP location failed' };
+            showStatus('❌ Error: ' + error.message, 'error');
         }
     }
     
-    // Check 3: VPN/Proxy detection
-    async function checkVPN() {
+    // Smart GPS collection with multiple checks
+    function getSmartGPS() {
+        return new Promise((resolve, reject) => {
+            let positions = [];
+            let watchId;
+            let checks = 0;
+            
+            watchId = navigator.geolocation.watchPosition(
+                (position) => {
+                    positions.push({
+                        lat: position.coords.latitude,
+                        lon: position.coords.longitude,
+                        accuracy: position.coords.accuracy,
+                        altitude: position.coords.altitude,
+                        altitudeAccuracy: position.coords.altitudeAccuracy,
+                        speed: position.coords.speed,
+                        heading: position.coords.heading,
+                        timestamp: position.timestamp
+                    });
+                    
+                    checks++;
+                    
+                    // Collect 3 readings then analyze
+                    if (checks >= 3) {
+                        navigator.geolocation.clearWatch(watchId);
+                        
+                        const avgPosition = analyzeGPSReadings(positions);
+                        resolve(avgPosition);
+                    }
+                },
+                (error) => reject(error),
+                {
+                    enableHighAccuracy: true,
+                    maximumAge: 0,
+                    timeout: 10000
+                }
+            );
+            
+            // Timeout after 15 seconds
+            setTimeout(() => {
+                navigator.geolocation.clearWatch(watchId);
+                if (positions.length > 0) {
+                    resolve(analyzeGPSReadings(positions));
+                } else {
+                    reject(new Error('GPS timeout'));
+                }
+            }, 15000);
+        });
+    }
+    
+    // Analyze multiple GPS readings
+    function analyzeGPSReadings(positions) {
+        if (positions.length === 0) return null;
+        
+        // Calculate averages
+        const avgLat = positions.reduce((sum, pos) => sum + pos.lat, 0) / positions.length;
+        const avgLon = positions.reduce((sum, pos) => sum + pos.lon, 0) / positions.length;
+        const avgAccuracy = positions.reduce((sum, pos) => sum + pos.accuracy, 0) / positions.length;
+        
+        // Check for consistency (real GPS moves slightly, fake GPS is often static)
+        let isConsistent = true;
+        let maxVariation = 0;
+        
+        if (positions.length > 1) {
+            for (let i = 1; i < positions.length; i++) {
+                const distance = calculateDistance(
+                    positions[i-1].lat, positions[i-1].lon,
+                    positions[i].lat, positions[i].lon
+                );
+                maxVariation = Math.max(maxVariation, distance);
+            }
+            
+            // Normal phones: 0-50m variation between readings
+            // Fake GPS: Often 0m (exact same coordinates) or huge jumps
+            if (maxVariation > 1000) { // >1km between readings
+                isConsistent = false;
+            }
+        }
+        
+        // Check for suspicious patterns
+        const suspiciousPatterns = {
+            perfectAccuracy: avgAccuracy < 1, // Less than 1m accuracy (suspicious on phone)
+            zeroAltitude: positions.every(p => p.altitude === 0), // Fake GPS often has altitude 0
+            noAltitudeAccuracy: positions.every(p => p.altitudeAccuracy === null),
+            noSpeed: positions.every(p => p.speed === null), // No movement data
+            noHeading: positions.every(p => p.heading === null) // No direction data
+        };
+        
+        return {
+            lat: avgLat,
+            lon: avgLon,
+            accuracy: avgAccuracy,
+            readings: positions.length,
+            consistency: isConsistent,
+            maxVariation: maxVariation,
+            suspicious: suspiciousPatterns,
+            trustScore: calculateGPSTrust(avgAccuracy, suspiciousPatterns, maxVariation)
+        };
+    }
+    
+    // Smart IP location with multiple fallbacks
+    async function getSmartIPLocation() {
+        const services = [
+            'https://ipapi.co/json/',
+            'https://ipinfo.io/json',
+            'https://geolocation-db.com/json/'
+        ];
+        
+        for (const service of services) {
+            try {
+                const response = await fetch(service);
+                const data = await response.json();
+                
+                let lat, lon, city, country, isp;
+                
+                // Parse different API formats
+                if (data.latitude && data.longitude) {
+                    lat = data.latitude;
+                    lon = data.longitude;
+                } else if (data.loc) {
+                    [lat, lon] = data.loc.split(',');
+                }
+                
+                city = data.city || data.region || '';
+                country = data.country_name || data.country || '';
+                isp = data.org || data.isp || '';
+                
+                // Calculate IP location accuracy (city-level = ~20km radius)
+                const ipAccuracy = city ? 20000 : 50000; // City known: ~20km, country only: ~50km
+                
+                return {
+                    lat: parseFloat(lat) || 0,
+                    lon: parseFloat(lon) || 0,
+                    city: city,
+                    country: country,
+                    isp: isp,
+                    accuracy: ipAccuracy,
+                    trustScore: calculateIPTrust(isp, city)
+                };
+                
+            } catch (error) {
+                continue; // Try next service
+            }
+        }
+        
+        throw new Error('All IP services failed');
+    }
+    
+    // Get network information
+    async function getNetworkInfo() {
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        
+        return {
+            type: connection ? connection.effectiveType : 'unknown',
+            downlink: connection ? connection.downlink : 'unknown',
+            rtt: connection ? connection.rtt : 'unknown',
+            saveData: connection ? connection.saveData : false,
+            isMobile: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+        };
+    }
+    
+    // Check for VPN/Proxy
+    async function checkForVPN() {
         try {
             const response = await fetch('https://ipapi.co/json/');
             const data = await response.json();
             
-            // Simple VPN detection
-            const isVPN = data.security ? 
-                (data.security.is_vpn || data.security.is_proxy || data.security.is_tor) : 
-                (data.org.toLowerCase().includes('vpn') || 
-                 data.org.toLowerCase().includes('proxy'));
+            const isp = data.org || '';
+            const ispLower = isp.toLowerCase();
             
-            return { isVPN: isVPN, org: data.org };
+            // Common VPN/Proxy/Hosting indicators
+            const vpnKeywords = ['vpn', 'proxy', 'tor', 'anonymizer', 'privacy'];
+            const hostingKeywords = ['hosting', 'datacenter', 'server', 'cloud', 'aws', 'azure', 'google cloud', 'digitalocean', 'linode', 'vultr'];
+            
+            let isVPN = vpnKeywords.some(keyword => ispLower.includes(keyword));
+            let isHosting = hostingKeywords.some(keyword => ispLower.includes(keyword));
+            
+            return {
+                isVPN: isVPN,
+                isHosting: isHosting,
+                isp: isp,
+                trustScore: isVPN || isHosting ? 30 : 80
+            };
+            
         } catch {
-            return { isVPN: false };
+            return { isVPN: false, isHosting: false, trustScore: 50 };
         }
     }
     
-    // Check 4: Timezone verification
-    function checkTimezone() {
-        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const offset = new Date().getTimezoneOffset();
+    // Calculate overall trust score (0-100)
+    function calculateTrustScore(gps, ip, network, vpn) {
+        let score = 0;
+        let weights = 0;
         
-        return { 
-            timezone: timezone, 
-            offset: offset,
-            suspicious: false 
-        };
+        // GPS trust (40% weight)
+        if (gps && gps.trustScore) {
+            score += gps.trustScore * 0.4;
+            weights += 0.4;
+        }
+        
+        // IP trust (30% weight)
+        if (ip && ip.trustScore) {
+            score += ip.trustScore * 0.3;
+            weights += 0.3;
+        }
+        
+        // VPN trust (20% weight)
+        if (vpn && vpn.trustScore) {
+            score += vpn.trustScore * 0.2;
+            weights += 0.2;
+        }
+        
+        // Network trust (10% weight)
+        if (network && network.isMobile) {
+            score += 80 * 0.1; // Mobile gets higher trust
+            weights += 0.1;
+        }
+        
+        // Normalize score
+        if (weights > 0) {
+            return Math.round(score / weights);
+        }
+        
+        return 50; // Default middle score
     }
     
-    // Check 5: Speed detection (impossible movements)
-    function checkSpeed() {
-        return new Promise((resolve) => {
-            let lastPosition = null;
-            let lastTime = null;
+    // Calculate GPS trust score
+    function calculateGPSTrust(accuracy, suspicious, maxVariation) {
+        let score = 70; // Base score
+        
+        // Adjust based on accuracy (normal phone GPS: 10-100m)
+        if (accuracy < 10) score -= 30; // Too accurate = suspicious
+        else if (accuracy <= 50) score += 20; // Good accuracy
+        else if (accuracy <= 200) score += 10; // Normal accuracy
+        else if (accuracy > 1000) score -= 20; // Poor accuracy
+        
+        // Check suspicious patterns
+        if (suspicious.perfectAccuracy) score -= 40;
+        if (suspicious.zeroAltitude) score -= 15;
+        if (suspicious.noSpeed) score -= 10;
+        
+        // Check consistency
+        if (maxVariation > 10000) score -= 30; // Huge jumps
+        else if (maxVariation > 1000) score -= 20; // Large jumps
+        else if (maxVariation > 100) score -= 5; // Normal movement
+        
+        return Math.max(0, Math.min(100, score));
+    }
+    
+    // Calculate IP trust score
+    function calculateIPTrust(isp, city) {
+        let score = 60; // Base score
+        
+        // ISP-based scoring
+        const ispLower = isp.toLowerCase();
+        if (ispLower.includes('mobile') || ispLower.includes('cellular') || ispLower.includes('wireless')) {
+            score += 20; // Mobile ISP = more trust
+        }
+        
+        if (ispLower.includes('vpn') || ispLower.includes('proxy')) {
+            score -= 40; // VPN/Proxy = less trust
+        }
+        
+        if (ispLower.includes('hosting') || ispLower.includes('datacenter')) {
+            score -= 30; // Hosting = less trust
+        }
+        
+        // City-level accuracy
+        if (city) score += 10; // City known = more trust
+        
+        return Math.max(0, Math.min(100, score));
+    }
+    
+    // Analyze warnings
+    function analyzeWarnings(gps, ip, vpn) {
+        const warnings = [];
+        
+        if (!gps) {
+            warnings.push('No GPS data available');
+            return warnings;
+        }
+        
+        // GPS warnings
+        if (gps.accuracy < 5) {
+            warnings.push('Suspiciously perfect GPS accuracy (<5m)');
+        }
+        
+        if (gps.suspicious.zeroAltitude) {
+            warnings.push('Altitude data missing (common in fake GPS)');
+        }
+        
+        if (gps.suspicious.noSpeed && gps.suspicious.noHeading) {
+            warnings.push('No movement/direction data');
+        }
+        
+        if (gps.maxVariation > 10000) {
+            warnings.push('GPS coordinates jumped significantly');
+        }
+        
+        // VPN warnings
+        if (vpn.isVPN) {
+            warnings.push('VPN/Proxy detected');
+        }
+        
+        if (vpn.isHosting) {
+            warnings.push('Hosting/datacenter IP detected');
+        }
+        
+        return warnings;
+    }
+    
+    // Display smart results
+    function displaySmartResults(gps, ip, trustScore, isReal, warnings) {
+        let resultClass = 'verified';
+        let statusText = '✅ LOCATION VERIFIED';
+        let statusClass = 'good';
+        
+        if (trustScore >= 80) {
+            statusText = '✅ HIGHLY TRUSTED LOCATION';
+            statusClass = 'good';
+            resultClass = 'verified';
+        } else if (trustScore >= 60) {
+            statusText = '⚠️ MODERATELY TRUSTED';
+            statusClass = 'medium';
+            resultClass = 'warning';
+        } else {
+            statusText = '🚨 SUSPICIOUS LOCATION';
+            statusClass = 'bad';
+            resultClass = 'suspicious';
+        }
+        
+        // Calculate GPS-IP distance
+        let distance = 0;
+        if (gps && ip && ip.lat !== 0) {
+            distance = calculateDistance(gps.lat, gps.lon, ip.lat, ip.lon);
+        }
+        
+        // Smart distance interpretation
+        let distanceStatus = 'Normal';
+        let distanceClass = 'score-good';
+        
+        if (distance === 0) {
+            distanceStatus = 'Unknown';
+            distanceClass = 'score-medium';
+        } else if (distance < 20000) { // <20km
+            distanceStatus = 'Excellent';
+            distanceClass = 'score-good';
+        } else if (distance < 100000) { // <100km
+            distanceStatus = 'Normal (mobile)';
+            distanceClass = 'score-medium';
+        } else if (distance < 500000) { // <500km
+            distanceStatus = 'Large';
+            distanceClass = 'score-medium';
+        } else { // >500km
+            distanceStatus = 'Suspicious';
+            distanceClass = 'score-bad';
+        }
+        
+        let resultHTML = `
+            <div class="status-box ${statusClass}">
+                <h2 style="margin:0;">${statusText}</h2>
+                <p style="margin:5px 0 0 0; font-size:24px; font-weight:bold;">Trust Score: ${trustScore}/100</p>
+            </div>
             
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    if (lastPosition && lastTime) {
-                        const distance = calculateDistance(
-                            lastPosition.lat, lastPosition.lon,
-                            position.coords.latitude, position.coords.longitude
-                        );
-                        const timeDiff = (Date.now() - lastTime) / 1000; // seconds
-                        
-                        if (timeDiff > 0) {
-                            const speed = distance / timeDiff; // meters per second
-                            const speedKmh = speed * 3.6; // convert to km/h
-                            
-                            if (speedKmh > 1000) { // Impossible speed (>1000 km/h)
-                                resolve({ impossibleSpeed: true, speed: speedKmh });
-                                return;
-                            }
-                        }
-                    }
-                    
-                    // Store for next check
-                    lastPosition = {
-                        lat: position.coords.latitude,
-                        lon: position.coords.longitude
-                    };
-                    lastTime = Date.now();
-                    
-                    resolve({ impossibleSpeed: false });
-                },
-                () => resolve({ impossibleSpeed: false }),
-                { enableHighAccuracy: true }
-            );
-        });
+            <h3>📊 Location Metrics:</h3>
+            
+            <div class="metric">
+                <span>GPS Accuracy:</span>
+                <span class="metric-score ${gps.accuracy < 50 ? 'score-good' : gps.accuracy < 200 ? 'score-medium' : 'score-bad'}">
+                    ${Math.round(gps.accuracy)} meters
+                </span>
+            </div>
+            
+            <div class="metric">
+                <span>GPS Consistency:</span>
+                <span class="metric-score ${gps.consistency ? 'score-good' : 'score-bad'}">
+                    ${gps.consistency ? 'Stable' : 'Unstable'}
+                </span>
+            </div>
+            
+            <div class="metric">
+                <span>GPS vs IP Distance:</span>
+                <span class="metric-score ${distanceClass}">
+                    ${Math.round(distance/1000)} km (${distanceStatus})
+                </span>
+            </div>
+            
+            <div class="metric">
+                <span>ISP Type:</span>
+                <span class="metric-score ${ip.trustScore > 60 ? 'score-good' : ip.trustScore > 40 ? 'score-medium' : 'score-bad'}">
+                    ${ip.isp || 'Unknown'}
+                </span>
+            </div>
+        `;
+        
+        // Display coordinates
+        resultHTML += `
+            <h3>📍 Your Coordinates:</h3>
+            <div style="background:#e9ecef; padding:15px; border-radius:8px; margin:15px 0;">
+                <p><strong>GPS (Exact):</strong> ${gps.lat.toFixed(6)}, ${gps.lon.toFixed(6)}</p>
+                <p><strong>IP (Approximate):</strong> ${ip.lat.toFixed(6)}, ${ip.lon.toFixed(6)}</p>
+                <p><strong>City (from IP):</strong> ${ip.city || 'Unknown'}, ${ip.country || 'Unknown'}</p>
+            </div>
+        `;
+        
+        // Warnings
+        if (warnings.length > 0) {
+            resultHTML += `<h3>🔍 Findings:</h3><ul style="background:#fff3cd; padding:15px 15px 15px 30px; border-radius:8px;">`;
+            warnings.forEach(warning => {
+                resultHTML += `<li>${warning}</li>`;
+            });
+            resultHTML += `</ul>`;
+        }
+        
+        // Interpretation for normal phones
+        if (distance > 20000 && distance < 100000) {
+            resultHTML += `
+                <div style="background:#e7f3ff; padding:15px; border-radius:8px; margin:15px 0;">
+                    <p><strong>📱 Normal Phone Behavior Detected:</strong></p>
+                    <p>GPS vs IP distance of ${Math.round(distance/1000)}km is normal for mobile phones.
+                    Mobile IP locations are based on your ISP's network center, not your exact location.</p>
+                </div>
+            `;
+        }
+        
+        // Copy button for Rocket.Chat
+        const mapUrl = `https://maps.google.com/?q=${gps.lat},${gps.lon}`;
+        const message = `📍 Verified Location | Trust Score: ${trustScore}/100
+Latitude: ${gps.lat.toFixed(6)}
+Longitude: ${gps.lon.toFixed(6)}
+Accuracy: ${Math.round(gps.accuracy)} meters
+Map: ${mapUrl}
+Time: ${new Date().toLocaleString()}`;
+        
+        resultHTML += `
+            <h3>📋 Copy for Rocket.Chat:</h3>
+            <textarea id="locationText" rows="6">${message}</textarea>
+            <button class="btn" onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+        `;
+        
+        document.getElementById('result').innerHTML = `
+            <div class="result ${resultClass}">
+                ${resultHTML}
+            </div>
+        `;
     }
     
-    // Calculate distance between two coordinates
+    // Utility functions
     function calculateDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371000; // Earth radius in meters
+        const R = 6371000;
         const φ1 = lat1 * Math.PI/180;
         const φ2 = lat2 * Math.PI/180;
         const Δφ = (lat2-lat1) * Math.PI/180;
@@ -335,75 +625,19 @@
                 Math.sin(Δλ/2)*Math.sin(Δλ/2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         
-        return R * c; // Distance in meters
+        return R * c;
     }
     
-    // Display results
-    function displayResults(gps, ip, isVPN, isSuspicious, warnings, distance) {
-        let resultClass = 'verified';
-        let statusText = '✅ Location Verified';
-        let statusColor = 'green';
+    function showStatus(message, type) {
+        const colors = {
+            info: '#d1ecf1',
+            error: '#f8d7da',
+            success: '#d4edda'
+        };
         
-        if (isSuspicious) {
-            resultClass = 'suspicious';
-            statusText = '🚨 SUSPICIOUS LOCATION DETECTED';
-            statusColor = 'red';
-        } else if (warnings.length > 0) {
-            resultClass = 'warning';
-            statusText = '⚠️ Location May Be Fake';
-            statusColor = 'yellow';
-        }
-        
-        let resultHTML = `
-            <div class="status ${statusColor}">
-                <h3>${statusText}</h3>
-            </div>
-            
-            <h4>📍 GPS Location:</h4>
-            <p>${gps ? `${gps.lat.toFixed(6)}, ${gps.lon.toFixed(6)}` : 'Not available'}</p>
-            <p>Accuracy: ${gps ? Math.round(gps.accuracy) + ' meters' : 'N/A'}</p>
-            
-            <h4>🌐 IP Location:</h4>
-            <p>${ip ? `${ip.lat.toFixed(6)}, ${ip.lon.toFixed(6)}` : 'Not available'}</p>
-            <p>Provider: ${ip ? (ip.org || 'Unknown') : 'N/A'}</p>
-        `;
-        
-        if (gps && ip) {
-            resultHTML += `
-                <h4>📏 Distance Check:</h4>
-                <p>GPS vs IP distance: ${Math.round(distance/1000)} km</p>
-                <p>${distance > 100000 ? '⚠️ Large distance - possible fake GPS' : '✅ Distance normal'}</p>
-            `;
-        }
-        
-        if (isVPN) {
-            resultHTML += `<p><strong>⚠️ VPN/Proxy Detected</strong></p>`;
-        }
-        
-        if (warnings.length > 0) {
-            resultHTML += `<h4>🔍 Security Warnings:</h4><ul>`;
-            warnings.forEach(warning => {
-                resultHTML += `<li>${warning}</li>`;
-            });
-            resultHTML += `</ul>`;
-        }
-        
-        // Add copy button if location is verified
-        if (!isSuspicious && gps) {
-            const mapUrl = `https://maps.google.com/?q=${gps.lat},${gps.lon}`;
-            const message = `📍 Verified Location: ${gps.lat.toFixed(6)}, ${gps.lon.toFixed(6)} - ${mapUrl}`;
-            
-            resultHTML += `
-                <hr>
-                <h4>📋 Copy for Rocket.Chat:</h4>
-                <textarea id="locationText" style="width:100%; padding:10px; margin:10px 0;" rows="3">${message}</textarea>
-                <button class="btn" onclick="copyToClipboard()">📋 Copy to Clipboard</button>
-            `;
-        }
-        
-        document.getElementById('result').innerHTML = `
-            <div class="result ${resultClass}">
-                ${resultHTML}
+        document.getElementById('status').innerHTML = `
+            <div style="padding:15px; background:${colors[type] || '#fff3cd'}; border-radius:8px; margin:10px 0;">
+                ${message}
             </div>
         `;
     }
@@ -413,24 +647,17 @@
         textarea.select();
         document.execCommand('copy');
         
-        // Show confirmation
         const btn = event.target;
-        const originalText = btn.innerHTML;
+        const original = btn.innerHTML;
         btn.innerHTML = '✅ Copied!';
-        setTimeout(() => {
-            btn.innerHTML = originalText;
-        }, 2000);
+        setTimeout(() => btn.innerHTML = original, 2000);
     }
     
-    // Add device info
+    // Initialize
     window.addEventListener('load', () => {
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         if (isMobile) {
-            document.querySelector('.container').innerHTML += `
-                <div style="margin-top: 20px; padding: 10px; background: #e7f3ff; border-radius: 8px;">
-                    📱 <strong>Mobile detected:</strong> For best accuracy, enable GPS and WiFi
-                </div>
-            `;
+            document.querySelector('.subtitle').innerHTML += '<br><small>📱 Mobile optimized - understands normal GPS vs IP differences</small>';
         }
     });
     </script>
