@@ -1,83 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="fa" dir="rtl">
 <head>
-    <title>⚡ Quick Fake GPS Detector</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ثبت موقعیت مشتری</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: #6276a3;
             min-height: 100vh;
-            padding: 20px;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333;
         }
         
         .container {
             width: 100%;
-            max-width: 450px;
+            max-width: 500px;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
             overflow: hidden;
+            position: relative;
         }
         
         .header {
-            background: linear-gradient(135deg, #ff416c, #ff4b2b);
-            color: white;
-            padding: 30px;
-            text-align: center;
+            background: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .logo {
+            height: 50px;
         }
         
         .header h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
+            color: #6276a3;
+            font-size: 22px;
             font-weight: 700;
-        }
-        
-        .header p {
-            opacity: 0.9;
-            font-size: 14px;
         }
         
         .content {
             padding: 30px;
         }
         
-        .timer {
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #6276a3;
+            font-size: 18px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 18px;
+            transition: border-color 0.3s;
             text-align: center;
-            font-size: 48px;
-            font-weight: 800;
-            color: #2D8CFF;
-            margin: 20px 0;
-            font-family: monospace;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #6276a3;
         }
         
         .btn {
-            background: linear-gradient(135deg, #2D8CFF, #0066CC);
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #6276a3, #4a5d8a);
             color: white;
             border: none;
-            padding: 20px;
+            border-radius: 10px;
             font-size: 18px;
             font-weight: 600;
-            border-radius: 15px;
             cursor: pointer;
-            width: 100%;
-            margin: 15px 0;
-            transition: all 0.2s;
-            box-shadow: 0 5px 20px rgba(42, 139, 242, 0.4);
+            transition: all 0.3s;
+            margin-top: 10px;
         }
         
         .btn:hover {
+            background: linear-gradient(135deg, #4a5d8a, #37496f);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(42, 139, 242, 0.5);
+            box-shadow: 0 8px 20px rgba(98, 118, 163, 0.3);
         }
         
         .btn:active {
@@ -85,69 +107,80 @@
         }
         
         .btn:disabled {
-            background: #ccc;
+            background: #cccccc;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
         
-        .btn-danger {
-            background: linear-gradient(135deg, #ff416c, #ff4b2b);
-        }
-        
-        .result {
-            margin-top: 25px;
-            padding: 25px;
-            border-radius: 15px;
-            background: #f8f9fa;
-            border: 2px solid #2D8CFF;
+        .status-box {
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            font-weight: 500;
+            text-align: center;
             display: none;
         }
         
-        .result-real {
-            border-color: #28a745;
+        .status-success {
             background: #d4edda;
+            color: #155724;
+            border-right: 5px solid #28a745;
         }
         
-        .result-fake {
-            border-color: #dc3545;
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-right: 5px solid #ffc107;
+        }
+        
+        .status-error {
             background: #f8d7da;
+            color: #721c24;
+            border-right: 5px solid #dc3545;
         }
         
-        .result h3 {
-            margin-bottom: 15px;
+        .status-info {
+            background: #e7f3ff;
+            color: #0066cc;
+            border-right: 5px solid #2D8CFF;
+        }
+        
+        .result-box {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border: 2px solid #6276a3;
+            display: none;
+        }
+        
+        .result-header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #6276a3;
             font-size: 20px;
+            font-weight: 700;
         }
         
-        .check-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            margin: 10px 0;
-            background: white;
-            border-radius: 10px;
-            border: 1px solid #dee2e6;
-        }
-        
-        .check-status {
-            font-size: 24px;
-            font-weight: bold;
-        }
-        
-        .check-good { color: #28a745; }
-        .check-bad { color: #dc3545; }
-        .check-warning { color: #ffc107; }
-        
-        .coordinates {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
+        .separator {
+            height: 2px;
+            background: #6276a3;
             margin: 20px 0;
-            border: 2px solid #2D8CFF;
-            font-family: 'Courier New', monospace;
+            opacity: 0.3;
+        }
+        
+        .result-line {
+            margin: 15px 0;
             font-size: 16px;
             line-height: 1.6;
+        }
+        
+        .result-label {
+            font-weight: 600;
+            color: #6276a3;
+            display: inline-block;
+            width: 120px;
         }
         
         .copy-btn {
@@ -155,21 +188,55 @@
             color: white;
             border: none;
             padding: 15px;
-            font-size: 16px;
             border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
             width: 100%;
-            margin: 10px 0;
-            font-weight: 600;
+            margin-top: 20px;
+            transition: all 0.3s;
         }
         
-        .warning {
-            background: #fff3cd;
-            color: #856404;
-            padding: 15px;
-            border-radius: 10px;
+        .copy-btn:hover {
+            background: linear-gradient(135deg, #1e7e34, #155724);
+            transform: translateY(-2px);
+        }
+        
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+        
+        .timer {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 700;
+            color: #6276a3;
             margin: 20px 0;
-            border-left: 5px solid #ffc107;
+            font-family: monospace;
+            display: none;
+        }
+        
+        .accuracy-meter {
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .accuracy-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff4444, #ffbb33, #00C851);
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .accuracy-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
         }
         
         .loading {
@@ -180,573 +247,376 @@
             border-radius: 50%;
             border-top-color: white;
             animation: spin 1s ease-in-out infinite;
-            margin-right: 10px;
+            margin-left: 10px;
         }
         
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
         
-        .progress-bar {
-            height: 8px;
-            background: #e9ecef;
-            border-radius: 4px;
+        .instructions {
+            background: #f0f7ff;
+            padding: 15px;
+            border-radius: 10px;
             margin: 20px 0;
-            overflow: hidden;
+            font-size: 14px;
+            color: #555;
+            border-right: 4px solid #6276a3;
         }
         
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #ff416c, #ff4b2b, #ffc107, #28a745);
-            width: 0%;
-            transition: width 0.3s;
+        @media (max-width: 600px) {
+            .content {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 18px;
+            }
+            
+            .form-control, .btn {
+                padding: 15px;
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>⚡ FAKE GPS DETECTOR</h1>
-            <p>30-Second Real Location Verification</p>
+            <h1>ثبت موقعیت مکانی</h1>
+            <img src="https://kalleh.com/wp-content/themes/kalleh/assets/images/logo-fa.png" alt="Logo" class="logo">
         </div>
         
         <div class="content">
-            <div class="timer" id="timer">30s</div>
-            
-            <div class="progress-bar">
-                <div class="progress-fill" id="progress"></div>
+            <div class="form-group">
+                <label for="customerCode">کد مشتری</label>
+                <input type="number" id="customerCode" class="form-control" placeholder="مثال: 123456" min="1">
             </div>
             
-            <button class="btn" id="scanBtn" onclick="startFakeGPSCheck()">
-                ⚡ START 30-SECOND CHECK
-            </button>
-            
-            <div class="warning">
-                <strong>🎯 What we check:</strong>
-                <ul style="margin-top: 10px; padding-left: 20px;">
-                    <li>Fake GPS app detection</li>
-                    <li>VPN/Proxy masking</li>
-                    <li>Impossible accuracy levels</li>
-                    <li>Suspicious coordinate patterns</li>
+            <div class="instructions">
+                <strong>📱 نکات مهم:</strong>
+                <ul style="margin-top: 10px; padding-right: 20px;">
+                    <li>برای دقت بهتر، در فضای باز باشید</li>
+                    <li>GPS گوشی را روشن کنید</li>
+                    <li>اتصال اینترنت فعال باشد</li>
+                    <li>حداکثر زمان: 60 ثانیه</li>
                 </ul>
             </div>
             
-            <div id="result" class="result"></div>
+            <div class="timer" id="timer">60</div>
+            
+            <div class="accuracy-meter">
+                <div class="accuracy-fill" id="accuracyFill"></div>
+            </div>
+            <div class="accuracy-label">
+                <span>دقت کم</span>
+                <span>دقت خوب</span>
+                <span>عالی</span>
+            </div>
+            
+            <button class="btn" id="locationBtn" onclick="getLocation()">
+                ثبت موقعیت
+            </button>
+            
+            <div id="status" class="status-box"></div>
+            
+            <div class="result-box" id="resultBox">
+                <div class="result-header">📍 اطلاعات موقعیت مکانی</div>
+                
+                <div class="separator"></div>
+                
+                <div class="result-line">
+                    <span class="result-label">SAPCODE:</span>
+                    <span id="resultSapCode"></span>
+                </div>
+                
+                <div class="separator"></div>
+                
+                <div class="result-line">
+                    <span class="result-label">latitude:</span>
+                    <span id="resultLat"></span>
+                </div>
+                
+                <div class="result-line">
+                    <span class="result-label">longitude:</span>
+                    <span id="resultLon"></span>
+                </div>
+                
+                <div class="separator"></div>
+                
+                <div class="result-line">
+                    <span class="result-label">google map:</span>
+                    <a id="mapLink" target="_blank" style="color: #0066cc; text-decoration: none;">مشاهده روی نقشه</a>
+                </div>
+                
+                <textarea id="copyText" style="display: none;"></textarea>
+                
+                <button class="copy-btn" onclick="copyToClipboard()">📋 کپی اطلاعات</button>
+            </div>
         </div>
     </div>
 
     <script>
     // Global variables
-    let scanTimeout = null;
-    let timeLeft = 30;
-    let isScanning = false;
+    let timerInterval = null;
+    let timeLeft = 60;
+    let isGettingLocation = false;
+    let watchId = null;
     
-    // Start the fake GPS check
-    async function startFakeGPSCheck() {
-        if (isScanning) return;
+    // Get location function
+    function getLocation() {
+        // Validate customer code
+        const customerCode = document.getElementById('customerCode').value;
+        if (!customerCode || customerCode.trim() === '') {
+            showStatus('لطفاً کد مشتری را وارد کنید', 'error');
+            return;
+        }
         
-        isScanning = true;
-        timeLeft = 30;
+        if (isGettingLocation) return;
+        
+        isGettingLocation = true;
+        timeLeft = 60;
         
         // Update UI
-        const btn = document.getElementById('scanBtn');
-        btn.innerHTML = '<span class="loading"></span> SCANNING...';
+        const btn = document.getElementById('locationBtn');
+        btn.innerHTML = '<span class="loading"></span> در حال دریافت موقعیت...';
         btn.disabled = true;
         
-        // Clear previous results
-        document.getElementById('result').style.display = 'none';
-        document.getElementById('result').innerHTML = '';
+        // Show timer
+        const timerElement = document.getElementById('timer');
+        timerElement.style.display = 'block';
+        timerElement.textContent = timeLeft;
+        
+        // Hide previous results
+        document.getElementById('resultBox').style.display = 'none';
         
         // Start timer
-        updateTimer();
+        startTimer();
         
-        // Start all checks in parallel
-        const checks = await Promise.all([
-            checkForFakeGPS(),
-            checkIPLocation(),
-            checkForVPN(),
-            checkCoordinatesPattern()
-        ]);
+        // Show initial status
+        showStatus('در حال برقراری ارتباط با GPS...', 'info');
         
-        // Analyze results
-        const analysis = analyzeFakeGPS(checks);
+        // Start GPS with high accuracy
+        const options = {
+            enableHighAccuracy: true,  // Force GPS for better accuracy
+            timeout: 55000,            // 55 seconds timeout (less than 1 min)
+            maximumAge: 0              // No cached positions
+        };
         
-        // Show results
-        showResults(analysis, checks);
-        
-        // Reset
-        isScanning = false;
-        btn.innerHTML = '⚡ START 30-SECOND CHECK';
-        btn.disabled = false;
-    }
-    
-    // Timer function
-    function updateTimer() {
-        const timerElement = document.getElementById('timer');
-        const progressElement = document.getElementById('progress');
-        
-        if (timeLeft > 0 && isScanning) {
-            timeLeft--;
-            timerElement.textContent = timeLeft + 's';
-            progressElement.style.width = ((30 - timeLeft) / 30 * 100) + '%';
-            
-            // Change progress color based on time
-            if (timeLeft > 20) {
-                progressElement.style.background = '#ff416c';
-            } else if (timeLeft > 10) {
-                progressElement.style.background = '#ffc107';
-            } else {
-                progressElement.style.background = '#28a745';
-            }
-            
-            setTimeout(updateTimer, 1000);
-        }
-    }
-    
-    // CHECK 1: Fake GPS Detection
-    async function checkForFakeGPS() {
-        return new Promise((resolve) => {
-            const checks = {
-                hasAltitude: false,
-                hasSpeed: false,
-                hasHeading: false,
-                accuracy: null,
-                isSuspicious: false,
-                reasons: []
-            };
-            
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const coords = position.coords;
-                    
-                    // Check 1: Perfect accuracy (common in fake GPS)
-                    if (coords.accuracy < 2) {
-                        checks.isSuspicious = true;
-                        checks.reasons.push(`Perfect accuracy: ${coords.accuracy}m (Fake GPS apps often show <2m)`);
-                    }
-                    
-                    // Check 2: No altitude data (common in fake GPS)
-                    if (coords.altitude === null || coords.altitude === 0) {
-                        checks.isSuspicious = true;
-                        checks.reasons.push('No altitude data (Real GPS always has altitude)');
-                    } else {
-                        checks.hasAltitude = true;
-                    }
-                    
-                    // Check 3: No speed/heading data (common in fake GPS)
-                    if (coords.speed === null) {
-                        checks.isSuspicious = true;
-                        checks.reasons.push('No speed data (Real GPS has movement data)');
-                    } else {
-                        checks.hasSpeed = true;
-                    }
-                    
-                    if (coords.heading === null) {
-                        checks.reasons.push('No heading data');
-                    } else {
-                        checks.hasHeading = true;
-                    }
-                    
-                    // Check 4: Multiple readings consistency
-                    setTimeout(() => {
-                        navigator.geolocation.getCurrentPosition(
-                            (secondPosition) => {
-                                const distance = calculateDistance(
-                                    coords.latitude, coords.longitude,
-                                    secondPosition.coords.latitude, secondPosition.coords.longitude
-                                );
-                                
-                                // Real GPS has small variations, fake GPS is often static
-                                if (distance < 1 && coords.accuracy < 5) {
-                                    checks.isSuspicious = true;
-                                    checks.reasons.push(`GPS completely static (${distance.toFixed(2)}m movement - too perfect)`);
-                                }
-                                
-                                checks.accuracy = coords.accuracy;
-                                checks.position = position;
-                                resolve(checks);
-                            },
-                            () => resolve(checks),
-                            { enableHighAccuracy: true, timeout: 5000 }
-                        );
-                    }, 3000);
-                },
-                (error) => {
-                    checks.isSuspicious = true;
-                    checks.reasons.push(`GPS error: ${error.message}`);
-                    resolve(checks);
-                },
-                {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
+        // Use watchPosition to get multiple readings and better accuracy
+        watchId = navigator.geolocation.watchPosition(
+            // Success callback
+            (position) => {
+                const accuracy = position.coords.accuracy;
+                
+                // Update accuracy meter (0-100%)
+                let accuracyPercent = 0;
+                if (accuracy <= 5) accuracyPercent = 100;
+                else if (accuracy <= 10) accuracyPercent = 90;
+                else if (accuracy <= 20) accuracyPercent = 70;
+                else if (accuracy <= 50) accuracyPercent = 40;
+                else if (accuracy <= 100) accuracyPercent = 20;
+                
+                document.getElementById('accuracyFill').style.width = accuracyPercent + '%';
+                
+                // Check if accuracy is good enough (<10m)
+                if (accuracy <= 10) {
+                    // We got good accuracy! Stop and show results
+                    navigator.geolocation.clearWatch(watchId);
+                    finishWithSuccess(position, customerCode);
+                    return;
+                } else {
+                    // Still working on better accuracy
+                    showStatus(`دقت فعلی: ${Math.round(accuracy)} متر - در حال بهبود...`, 'warning');
                 }
-            );
-        });
-    }
-    
-    // CHECK 2: IP Location vs GPS
-    async function checkIPLocation() {
-        try {
-            const response = await fetch('https://ipapi.co/json/');
-            const ipData = await response.json();
-            
-            // Get GPS location for comparison
-            const gpsPosition = await new Promise((resolve) => {
-                navigator.geolocation.getCurrentPosition(resolve, () => resolve(null), { timeout: 5000 });
-            });
-            
-            let distance = null;
-            if (gpsPosition && ipData.latitude) {
-                distance = calculateDistance(
-                    gpsPosition.coords.latitude, gpsPosition.coords.longitude,
-                    ipData.latitude, ipData.longitude
+            },
+            // Error callback
+            (error) => {
+                handleLocationError(error);
+            },
+            options
+        );
+        
+        // Fallback: If we don't get <10m accuracy in time, use the best we got
+        setTimeout(() => {
+            if (isGettingLocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        finishWithSuccess(position, customerCode);
+                    },
+                    (error) => {
+                        handleLocationError(error);
+                    },
+                    { enableHighAccuracy: false, timeout: 5000 }
                 );
             }
-            
-            // Check if IP is from VPN/Hosting
-            const isp = ipData.org || '';
-            const ispLower = isp.toLowerCase();
-            const isVPN = ispLower.includes('vpn') || ispLower.includes('proxy') || ispLower.includes('tor');
-            const isHosting = ispLower.includes('hosting') || ispLower.includes('datacenter') || 
-                            ispLower.includes('aws') || ispLower.includes('google cloud') || 
-                            ispLower.includes('azure') || ispLower.includes('digitalocean');
-            
-            return {
-                distance: distance,
-                isVPN: isVPN,
-                isHosting: isHosting,
-                isp: isp,
-                city: ipData.city,
-                country: ipData.country_name,
-                ip: ipData.ip
-            };
-            
-        } catch (error) {
-            return { error: 'IP check failed', isVPN: false, isHosting: false };
-        }
+        }, 58000); // 58 seconds
     }
     
-    // CHECK 3: VPN Detection
-    async function checkForVPN() {
-        try {
-            // Multiple VPN detection methods
-            const [ipapiResponse, ipinfoResponse] = await Promise.all([
-                fetch('https://ipapi.co/json/').then(r => r.json()),
-                fetch('https://ipinfo.io/json').then(r => r.json())
-            ]);
+    // Start countdown timer
+    function startTimer() {
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer').textContent = timeLeft;
             
-            const isp = ipapiResponse.org || ipinfoResponse.org || '';
-            const ispLower = isp.toLowerCase();
-            
-            // VPN/Proxy keywords
-            const vpnKeywords = ['vpn', 'proxy', 'tor', 'anonymizer', 'privacy', 'hide', 'mask'];
-            const hostingKeywords = ['hosting', 'datacenter', 'server', 'cloud', 'aws', 'azure', 'google', 'digitalocean', 'linode', 'vultr'];
-            
-            const isVPN = vpnKeywords.some(keyword => ispLower.includes(keyword));
-            const isHosting = hostingKeywords.some(keyword => ispLower.includes(keyword));
-            
-            // Check if IP is residential (less likely to be fake GPS)
-            const isResidential = !isVPN && !isHosting && 
-                                (ispLower.includes('mobile') || 
-                                 ispLower.includes('telecom') || 
-                                 ispLower.includes('communications') ||
-                                 ispLower.includes('broadband') ||
-                                 isp === '');
-            
-            return {
-                isVPN: isVPN,
-                isHosting: isHosting,
-                isResidential: isResidential,
-                isp: isp
-            };
-            
-        } catch (error) {
-            return { isVPN: false, isHosting: false, isResidential: false, error: 'VPN check failed' };
-        }
-    }
-    
-    // CHECK 4: Coordinate Patterns
-    async function checkCoordinatesPattern() {
-        return new Promise((resolve) => {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    
-                    // Common fake GPS patterns
-                    const patterns = {
-                        // Too few decimal places (common in fake GPS)
-                        fewDecimals: (lat.toString().split('.')[1] || '').length < 5 || 
-                                    (lon.toString().split('.')[1] || '').length < 5,
-                        
-                        // Popular fake locations (common coordinates in fake GPS apps)
-                        isPopularFakeLocation: isPopularFakeLocation(lat, lon),
-                        
-                        // Exact integer or half-degree (suspicious)
-                        isExactDegree: lat % 1 === 0 || lon % 1 === 0 || 
-                                      lat % 0.5 === 0 || lon % 0.5 === 0,
-                        
-                        // Coordinates too "round"
-                        isRound: isCoordinateTooRound(lat) || isCoordinateTooRound(lon)
-                    };
-                    
-                    let isSuspicious = false;
-                    let reasons = [];
-                    
-                    if (patterns.fewDecimals) {
-                        isSuspicious = true;
-                        reasons.push('Coordinates have too few decimal places');
-                    }
-                    
-                    if (patterns.isPopularFakeLocation) {
-                        isSuspicious = true;
-                        reasons.push('Coordinates match known fake GPS locations');
-                    }
-                    
-                    if (patterns.isExactDegree) {
-                        isSuspicious = true;
-                        reasons.push('Coordinates are exact degrees (suspicious)');
-                    }
-                    
-                    resolve({
-                        isSuspicious: isSuspicious,
-                        reasons: reasons,
-                        patterns: patterns,
-                        coordinates: { lat: lat, lon: lon }
-                    });
-                },
-                () => resolve({ isSuspicious: false, reasons: ['Failed to get coordinates'] }),
-                { timeout: 5000 }
-            );
-        });
-    }
-    
-    // Check if coordinates match popular fake locations
-    function isPopularFakeLocation(lat, lon) {
-        const popularFakes = [
-            // Times Square, New York
-            { lat: 40.7580, lon: -73.9855, radius: 0.01 },
-            // Eiffel Tower, Paris
-            { lat: 48.8584, lon: 2.2945, radius: 0.01 },
-            // Tokyo Tower
-            { lat: 35.6586, lon: 139.7454, radius: 0.01 },
-            // Sydney Opera House
-            { lat: -33.8568, lon: 151.2153, radius: 0.01 },
-            // Popular fake GPS app defaults
-            { lat: 37.4219999, lon: -122.0840575 }, // Google HQ
-            { lat: 51.509865, lon: -0.118092 }, // London
-            { lat: 34.052235, lon: -118.243683 }, // Los Angeles
-        ];
-        
-        return popularFakes.some(loc => {
-            const distance = calculateDistance(lat, lon, loc.lat, loc.lon);
-            return distance < (loc.radius || 0.02) * 111000; // Convert degrees to meters
-        });
-    }
-    
-    // Check if coordinate is too "round"
-    function isCoordinateTooRound(num) {
-        const str = num.toString();
-        const decimalPart = str.split('.')[1] || '';
-        
-        // Check for repeating patterns like 40.12345678
-        if (decimalPart.length >= 4) {
-            const lastFour = decimalPart.slice(-4);
-            return /^(\d)\1{3}$/.test(lastFour); // Like 1111, 2222, etc.
-        }
-        
-        return false;
-    }
-    
-    // Analyze all checks
-    function analyzeFakeGPS(checks) {
-        const [gpsCheck, ipCheck, vpnCheck, coordCheck] = checks;
-        
-        let fakeScore = 0;
-        let reasons = [];
-        
-        // GPS check analysis (40 points)
-        if (gpsCheck.isSuspicious) {
-            fakeScore += 40;
-            reasons = reasons.concat(gpsCheck.reasons);
-        }
-        
-        // IP vs GPS distance (20 points)
-        if (ipCheck.distance !== null) {
-            if (ipCheck.distance > 100000) { // >100km difference
-                fakeScore += 20;
-                reasons.push(`GPS vs IP distance: ${Math.round(ipCheck.distance/1000)}km (too large)`);
-            } else if (ipCheck.distance < 1000) { // <1km (suspiciously perfect)
-                fakeScore += 10;
-                reasons.push('GPS and IP match perfectly (suspicious)');
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                if (isGettingLocation) {
+                    showStatus('زمان به پایان رسید', 'error');
+                    resetUI();
+                }
             }
-        }
-        
-        // VPN/Hosting (20 points)
-        if (vpnCheck.isVPN || vpnCheck.isHosting) {
-            fakeScore += 20;
-            reasons.push(`VPN/Hosting detected: ${vpnCheck.isp}`);
-        }
-        
-        // Coordinate patterns (20 points)
-        if (coordCheck.isSuspicious) {
-            fakeScore += 20;
-            reasons = reasons.concat(coordCheck.reasons);
-        }
-        
-        // Determine result
-        const isFake = fakeScore >= 40; // 40+ points = likely fake
-        
-        return {
-            isFake: isFake,
-            fakeScore: fakeScore,
-            reasons: reasons,
-            gpsData: gpsCheck,
-            ipData: ipCheck,
-            vpnData: vpnCheck,
-            coordData: coordCheck
-        };
+        }, 1000);
     }
     
-    // Show results
-    function showResults(analysis, checks) {
-        const [gpsCheck, ipCheck, vpnCheck, coordCheck] = checks;
-        const resultDiv = document.getElementById('result');
+    // Finish with success
+    function finishWithSuccess(position, customerCode) {
+        clearInterval(timerInterval);
         
-        let resultClass = 'result-real';
-        let resultTitle = '✅ REAL GPS DETECTED';
-        let resultIcon = '✅';
+        const accuracy = position.coords.accuracy;
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        const mapUrl = `https://maps.google.com/?q=${lat},${lon}`;
         
-        if (analysis.isFake) {
-            resultClass = 'result-fake';
-            resultTitle = '🚨 FAKE GPS DETECTED';
-            resultIcon = '🚨';
+        // Update UI
+        const btn = document.getElementById('locationBtn');
+        btn.innerHTML = 'ثبت موقعیت';
+        btn.disabled = false;
+        
+        // Hide timer
+        document.getElementById('timer').style.display = 'none';
+        
+        // Show status based on accuracy
+        if (accuracy <= 10) {
+            showStatus(`✅ موقعیت با دقت ${Math.round(accuracy)} متر ثبت شد`, 'success');
+        } else {
+            showStatus(`⚠️ موقعیت با دقت ${Math.round(accuracy)} متر ثبت شد (دقت کمتر از حد مطلوب)`, 'warning');
         }
         
-        // Build results HTML
-        let html = `
-            <h3>${resultIcon} ${resultTitle}</h3>
-            <p style="margin: 15px 0; font-size: 20px; font-weight: bold; color: ${analysis.isFake ? '#dc3545' : '#28a745'}">
-                Fake Score: ${analysis.fakeScore}/100
-            </p>
-            
-            <div class="check-item">
-                <span>GPS Data Quality:</span>
-                <span class="check-status ${gpsCheck.isSuspicious ? 'check-bad' : 'check-good'}">
-                    ${gpsCheck.isSuspicious ? '❌' : '✅'}
-                </span>
-            </div>
-            
-            <div class="check-item">
-                <span>VPN/Proxy:</span>
-                <span class="check-status ${vpnCheck.isVPN || vpnCheck.isHosting ? 'check-bad' : 'check-good'}">
-                    ${vpnCheck.isVPN || vpnCheck.isHosting ? '❌' : '✅'}
-                </span>
-            </div>
-            
-            <div class="check-item">
-                <span>Coordinate Patterns:</span>
-                <span class="check-status ${coordCheck.isSuspicious ? 'check-bad' : 'check-good'}">
-                    ${coordCheck.isSuspicious ? '❌' : '✅'}
-                </span>
-            </div>
-            
-            <div class="check-item">
-                <span>ISP Type:</span>
-                <span class="check-status ${vpnCheck.isResidential ? 'check-good' : 'check-warning'}">
-                    ${vpnCheck.isResidential ? '✅ Residential' : '⚠️ Non-Residential'}
-                </span>
-            </div>
-        `;
+        // Set results
+        document.getElementById('resultSapCode').textContent = customerCode;
+        document.getElementById('resultLat').textContent = lat.toFixed(6);
+        document.getElementById('resultLon').textContent = lon.toFixed(6);
+        document.getElementById('mapLink').href = mapUrl;
         
-        // Show reasons if fake
-        if (analysis.reasons.length > 0) {
-            html += `<div style="margin: 20px 0; padding: 15px; background: white; border-radius: 10px;">`;
-            html += `<h4>🔍 Findings:</h4><ul style="padding-left: 20px; margin-top: 10px;">`;
-            analysis.reasons.forEach(reason => {
-                html += `<li style="margin-bottom: 5px;">${reason}</li>`;
-            });
-            html += `</ul></div>`;
-        }
+        // Prepare text for copying
+        const copyText = `------------------------------
+SAPCODE: ${customerCode}
+------------------------------
+latitude: ${lat.toFixed(6)}
+longitude: ${lon.toFixed(6)}
+------------------------------
+google map link: ${mapUrl}`;
         
-        // Show coordinates
-        if (gpsCheck.position) {
-            const pos = gpsCheck.position.coords;
-            const lat = pos.latitude;
-            const lon = pos.longitude;
-            const mapUrl = `https://maps.google.com/?q=${lat},${lon}`;
-            
-            html += `
-                <div class="coordinates">
-                    <strong>📍 Coordinates:</strong><br>
-                    Latitude: ${lat.toFixed(8)}<br>
-                    Longitude: ${lon.toFixed(8)}<br>
-                    Accuracy: ${Math.round(pos.accuracy)} meters<br>
-                    Altitude: ${pos.altitude ? Math.round(pos.altitude) + 'm' : 'No data'}<br>
-                    <br>
-                    <strong>🌐 IP Location:</strong><br>
-                    ${ipCheck.city ? `${ipCheck.city}, ${ipCheck.country}` : 'Unknown'}<br>
-                    ISP: ${ipCheck.isp || 'Unknown'}
-                </div>
-                
-                <textarea id="locationText" style="width:100%; padding:15px; border-radius:10px; margin:15px 0; font-family:monospace;" rows="4">
-📍 Location Verification | ${analysis.isFake ? 'FAKE GPS DETECTED' : 'VERIFIED REAL LOCATION'}
-Coordinates: ${lat.toFixed(6)}, ${lon.toFixed(6)}
-Accuracy: ${Math.round(pos.accuracy)}m | Altitude: ${pos.altitude ? Math.round(pos.altitude) + 'm' : 'N/A'}
-IP Location: ${ipCheck.city || 'Unknown'}, ${ipCheck.country || 'Unknown'}
-ISP: ${ipCheck.isp || 'Unknown'}
-Time: ${new Date().toLocaleString()}
-Map: ${mapUrl}
-                </textarea>
-                
-                <button class="copy-btn" onclick="copyToClipboard()">📋 Copy to Rocket.Chat</button>
-            `;
-        }
+        document.getElementById('copyText').value = copyText;
         
-        resultDiv.innerHTML = html;
-        resultDiv.className = `result ${resultClass}`;
-        resultDiv.style.display = 'block';
+        // Show result box
+        document.getElementById('resultBox').style.display = 'block';
         
         // Scroll to results
-        resultDiv.scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth' });
+        
+        isGettingLocation = false;
     }
     
-    // Utility functions
-    function calculateDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371000;
-        const φ1 = lat1 * Math.PI/180;
-        const φ2 = lat2 * Math.PI/180;
-        const Δφ = (lat2-lat1) * Math.PI/180;
-        const Δλ = (lon2-lon1) * Math.PI/180;
+    // Handle location errors
+    function handleLocationError(error) {
+        clearInterval(timerInterval);
         
-        const a = Math.sin(Δφ/2)*Math.sin(Δφ/2) +
-                Math.cos(φ1)*Math.cos(φ2)*
-                Math.sin(Δλ/2)*Math.sin(Δλ/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        let errorMessage = 'خطا در دریافت موقعیت: ';
+        switch(error.code) {
+            case error.PERMISSION_DENIED:
+                errorMessage = 'دسترسی به موقعیت مکانی رد شد. لطفاً در تنظیمات مرورگر اجازه دهید.';
+                break;
+            case error.POSITION_UNAVAILABLE:
+                errorMessage = 'اطلاعات موقعیت در دسترس نیست. لطفاً GPS را روشن کنید.';
+                break;
+            case error.TIMEOUT:
+                errorMessage = 'دریافت موقعیت زمان‌بر شد. لطفاً دوباره تلاش کنید.';
+                break;
+            default:
+                errorMessage = 'خطای ناشناخته در دریافت موقعیت.';
+        }
         
-        return R * c;
+        showStatus(errorMessage, 'error');
+        resetUI();
     }
     
+    // Reset UI
+    function resetUI() {
+        isGettingLocation = false;
+        
+        const btn = document.getElementById('locationBtn');
+        btn.innerHTML = 'ثبت موقعیت';
+        btn.disabled = false;
+        
+        document.getElementById('timer').style.display = 'none';
+        document.getElementById('accuracyFill').style.width = '0%';
+    }
+    
+    // Show status messages
+    function showStatus(message, type) {
+        const statusDiv = document.getElementById('status');
+        statusDiv.innerHTML = message;
+        statusDiv.className = `status-box status-${type}`;
+        statusDiv.style.display = 'block';
+        
+        // Auto-hide success messages after 5 seconds
+        if (type === 'success') {
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+    }
+    
+    // Copy to clipboard
     function copyToClipboard() {
-        const textarea = document.getElementById('locationText');
+        const textarea = document.getElementById('copyText');
+        textarea.style.display = 'block';
         textarea.select();
-        document.execCommand('copy');
+        textarea.setSelectionRange(0, 99999);
         
-        const btn = event.target;
-        const original = btn.innerHTML;
-        btn.innerHTML = '✅ Copied!';
-        setTimeout(() => btn.innerHTML = original, 2000);
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                showStatus('✅ اطلاعات با موفقیت کپی شد', 'success');
+                
+                // Change button text temporarily
+                const btn = event.target;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '✅ کپی شد!';
+                btn.style.background = 'linear-gradient(135deg, #28a745, #1e7e34)';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = 'linear-gradient(135deg, #28a745, #1e7e34)';
+                }, 2000);
+            }
+        } catch (err) {
+            showStatus('❌ خطا در کپی کردن اطلاعات', 'error');
+        }
+        
+        textarea.style.display = 'none';
     }
     
     // Initialize
     window.addEventListener('load', () => {
-        // Auto-start on mobile for convenience
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        if (isMobile) {
-            document.querySelector('.warning').innerHTML += 
-                '<p style="margin-top:10px;"><strong>📱 Mobile detected:</strong> Ready for quick verification</p>';
+        // Check if geolocation is supported
+        if (!navigator.geolocation) {
+            showStatus('مرورگر شما از قابلیت موقعیت‌یابی پشتیبانی نمی‌کند', 'error');
+            document.getElementById('locationBtn').disabled = true;
         }
+        
+        // Focus on customer code field
+        document.getElementById('customerCode').focus();
+        
+        // Allow Enter key to trigger location
+        document.getElementById('customerCode').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                getLocation();
+            }
+        });
     });
     </script>
 </body>
