@@ -1,171 +1,177 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>📍 Military-Grade GPS Accuracy</title>
+    <title>⚡ Quick Fake GPS Detector</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        * {
             margin: 0;
-            padding: 20px;
-            background: linear-gradient(135deg, #1a2980, #26d0ce);
-            min-height: 100vh;
+            padding: 0;
+            box-sizing: border-box;
         }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
         .container {
-            max-width: 500px;
-            margin: 0 auto;
+            width: 100%;
+            max-width: 450px;
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow: hidden;
         }
+        
         .header {
-            background: linear-gradient(135deg, #2D8CFF, #0066CC);
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
             color: white;
             padding: 30px;
             text-align: center;
         }
+        
         .header h1 {
-            margin: 0;
             font-size: 24px;
+            margin-bottom: 10px;
             font-weight: 700;
         }
+        
         .header p {
-            margin: 10px 0 0;
             opacity: 0.9;
-            font-size: 16px;
+            font-size: 14px;
         }
+        
         .content {
-            padding: 25px;
+            padding: 30px;
         }
-        .accuracy-meter {
-            background: linear-gradient(90deg, #ff4444, #ffbb33, #00C851);
-            height: 8px;
-            border-radius: 4px;
-            margin: 25px 0;
-            position: relative;
+        
+        .timer {
+            text-align: center;
+            font-size: 48px;
+            font-weight: 800;
+            color: #2D8CFF;
+            margin: 20px 0;
+            font-family: monospace;
         }
-        .accuracy-marker {
-            position: absolute;
-            top: -5px;
-            width: 3px;
-            height: 18px;
-            background: #333;
-        }
-        .meter-labels {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 5px;
-            font-size: 12px;
-            color: #666;
-        }
+        
         .btn {
             background: linear-gradient(135deg, #2D8CFF, #0066CC);
             color: white;
             border: none;
-            padding: 18px 30px;
+            padding: 20px;
             font-size: 18px;
             font-weight: 600;
             border-radius: 15px;
             cursor: pointer;
             width: 100%;
             margin: 15px 0;
-            transition: all 0.3s;
+            transition: all 0.2s;
             box-shadow: 0 5px 20px rgba(42, 139, 242, 0.4);
         }
+        
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(42, 139, 242, 0.5);
         }
+        
         .btn:active {
             transform: translateY(0);
         }
+        
         .btn:disabled {
             background: #ccc;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
-        .status {
-            padding: 15px;
-            border-radius: 12px;
-            margin: 15px 0;
-            font-weight: 500;
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
         }
-        .status-good {
-            background: #d4edda;
-            color: #155724;
-            border-left: 5px solid #28a745;
-        }
-        .status-warning {
-            background: #fff3cd;
-            color: #856404;
-            border-left: 5px solid #ffc107;
-        }
-        .status-error {
-            background: #f8d7da;
-            color: #721c24;
-            border-left: 5px solid #dc3545;
-        }
-        .status-info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border-left: 5px solid #17a2b8;
-        }
-        .result-box {
-            background: #f8f9fa;
-            padding: 20px;
+        
+        .result {
+            margin-top: 25px;
+            padding: 25px;
             border-radius: 15px;
-            margin-top: 20px;
+            background: #f8f9fa;
             border: 2px solid #2D8CFF;
+            display: none;
         }
-        .metric {
+        
+        .result-real {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+        
+        .result-fake {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+        
+        .result h3 {
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .check-item {
             display: flex;
             justify-content: space-between;
-            margin: 10px 0;
+            align-items: center;
             padding: 12px;
+            margin: 10px 0;
             background: white;
             border-radius: 10px;
             border: 1px solid #dee2e6;
-            align-items: center;
         }
-        .metric-value {
-            font-weight: 700;
-            font-size: 18px;
-            color: #2D8CFF;
+        
+        .check-status {
+            font-size: 24px;
+            font-weight: bold;
         }
-        .accuracy-badge {
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-        .badge-excellent { background: #28a745; color: white; }
-        .badge-good { background: #17a2b8; color: white; }
-        .badge-fair { background: #ffc107; color: #212529; }
-        .badge-poor { background: #dc3545; color: white; }
-        textarea {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #dee2e6;
+        
+        .check-good { color: #28a745; }
+        .check-bad { color: #dc3545; }
+        .check-warning { color: #ffc107; }
+        
+        .coordinates {
+            background: white;
+            padding: 20px;
             border-radius: 12px;
+            margin: 20px 0;
+            border: 2px solid #2D8CFF;
             font-family: 'Courier New', monospace;
             font-size: 16px;
-            margin: 15px 0;
-            resize: vertical;
-            min-height: 120px;
+            line-height: 1.6;
         }
-        .tip-box {
-            background: #e7f3ff;
-            padding: 20px;
-            border-radius: 15px;
-            margin: 25px 0;
-            border-left: 5px solid #2D8CFF;
+        
+        .copy-btn {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+            font-weight: 600;
         }
-        .tip-box h3 {
-            margin-top: 0;
-            color: #2D8CFF;
+        
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #ffc107;
         }
+        
         .loading {
             display: inline-block;
             width: 20px;
@@ -174,463 +180,554 @@
             border-radius: 50%;
             border-top-color: white;
             animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
         }
+        
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff416c, #ff4b2b, #ffc107, #28a745);
+            width: 0%;
+            transition: width 0.3s;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>📍 MILITARY-GRADE GPS ACCURACY</h1>
-            <p>Get under 5 meters accuracy with anti-fake GPS detection</p>
+            <h1>⚡ FAKE GPS DETECTOR</h1>
+            <p>30-Second Real Location Verification</p>
         </div>
         
         <div class="content">
-            <!-- Accuracy Meter -->
-            <div class="accuracy-meter">
-                <div class="accuracy-marker" style="left: 0%;"></div>
-                <div class="accuracy-marker" style="left: 25%;"></div>
-                <div class="accuracy-marker" style="left: 50%;"></div>
-                <div class="accuracy-marker" style="left: 75%;"></div>
-                <div class="accuracy-marker" style="left: 100%;"></div>
-            </div>
-            <div class="meter-labels">
-                <span>Poor (>50m)</span>
-                <span>Fair (20-50m)</span>
-                <span>Good (5-20m)</span>
-                <span>Excellent (1-5m)</span>
-                <span>Military (<1m)</span>
+            <div class="timer" id="timer">30s</div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress"></div>
             </div>
             
-            <!-- Tips for High Accuracy -->
-            <div class="tip-box">
-                <h3>🎯 FOR BEST ACCURACY:</h3>
-                <ol>
-                    <li><strong>Go OUTSIDE</strong> (clear sky view)</li>
-                    <li><strong>Enable WiFi</strong> even if not connected</li>
-                    <li><strong>Enable Mobile Data</strong></li>
-                    <li><strong>Hold phone flat</strong> (screen facing sky)</li>
-                    <li><strong>Wait 30 seconds</strong> after starting</li>
-                </ol>
-                <p style="margin-top: 10px; font-size: 14px; color: #666;">
-                    📱 <strong>On iPhone:</strong> Settings → Privacy → Location Services → Enable
-                    <br>📱 <strong>On Android:</strong> Settings → Location → High Accuracy Mode
-                </p>
-            </div>
-            
-            <!-- Main Button -->
-            <button class="btn" onclick="startHighAccuracyScan()">
-                🎯 START HIGH-ACCURACY SCAN
+            <button class="btn" id="scanBtn" onclick="startFakeGPSCheck()">
+                ⚡ START 30-SECOND CHECK
             </button>
             
-            <!-- Status Display -->
-            <div id="status"></div>
+            <div class="warning">
+                <strong>🎯 What we check:</strong>
+                <ul style="margin-top: 10px; padding-left: 20px;">
+                    <li>Fake GPS app detection</li>
+                    <li>VPN/Proxy masking</li>
+                    <li>Impossible accuracy levels</li>
+                    <li>Suspicious coordinate patterns</li>
+                </ul>
+            </div>
             
-            <!-- Results -->
-            <div id="results"></div>
+            <div id="result" class="result"></div>
         </div>
     </div>
 
     <script>
     // Global variables
-    let bestAccuracy = Infinity;
-    let bestPosition = null;
-    let watchId = null;
-    let scanStartTime = null;
+    let scanTimeout = null;
+    let timeLeft = 30;
     let isScanning = false;
     
-    // Start high accuracy scan
-    async function startHighAccuracyScan() {
+    // Start the fake GPS check
+    async function startFakeGPSCheck() {
         if (isScanning) return;
         
         isScanning = true;
-        bestAccuracy = Infinity;
-        bestPosition = null;
-        scanStartTime = Date.now();
+        timeLeft = 30;
         
         // Update UI
-        const btn = document.querySelector('.btn');
-        btn.innerHTML = '<span class="loading"></span> SCANNING FOR HIGH ACCURACY...';
+        const btn = document.getElementById('scanBtn');
+        btn.innerHTML = '<span class="loading"></span> SCANNING...';
         btn.disabled = true;
         
-        showStatus('🎯 Starting high-accuracy GPS scan...', 'info');
-        showStatus('📍 Move to OPEN AREA with clear sky view', 'warning');
-        showStatus('📡 Using GPS + WiFi + Mobile Data for maximum accuracy', 'info');
-        
         // Clear previous results
-        document.getElementById('results').innerHTML = '';
+        document.getElementById('result').style.display = 'none';
+        document.getElementById('result').innerHTML = '';
         
-        // Start watching position with highest accuracy settings
-        if (watchId !== null) {
-            navigator.geolocation.clearWatch(watchId);
-        }
+        // Start timer
+        updateTimer();
         
-        // AGGRESSIVE accuracy settings
-        const options = {
-            enableHighAccuracy: true,     // Force GPS chip usage
-            timeout: 60000,               // 60 second timeout
-            maximumAge: 0,                // No cached positions
-        };
+        // Start all checks in parallel
+        const checks = await Promise.all([
+            checkForFakeGPS(),
+            checkIPLocation(),
+            checkForVPN(),
+            checkCoordinatesPattern()
+        ]);
         
-        watchId = navigator.geolocation.watchPosition(
-            // Success callback
-            (position) => handlePositionUpdate(position),
-            // Error callback
-            (error) => handlePositionError(error),
-            options
-        );
+        // Analyze results
+        const analysis = analyzeFakeGPS(checks);
         
-        // Show progress updates
-        updateProgress();
+        // Show results
+        showResults(analysis, checks);
+        
+        // Reset
+        isScanning = false;
+        btn.innerHTML = '⚡ START 30-SECOND CHECK';
+        btn.disabled = false;
     }
     
-    // Handle position updates
-    function handlePositionUpdate(position) {
-        const accuracy = position.coords.accuracy;
-        const elapsed = (Date.now() - scanStartTime) / 1000;
+    // Timer function
+    function updateTimer() {
+        const timerElement = document.getElementById('timer');
+        const progressElement = document.getElementById('progress');
         
-        // Track best accuracy
-        if (accuracy < bestAccuracy) {
-            bestAccuracy = accuracy;
-            bestPosition = position;
+        if (timeLeft > 0 && isScanning) {
+            timeLeft--;
+            timerElement.textContent = timeLeft + 's';
+            progressElement.style.width = ((30 - timeLeft) / 30 * 100) + '%';
             
-            // Update status with current best
-            showStatus(`🎯 Best accuracy: ${Math.round(accuracy)} meters (${elapsed.toFixed(0)}s)`, 
-                      getAccuracyStatus(accuracy));
+            // Change progress color based on time
+            if (timeLeft > 20) {
+                progressElement.style.background = '#ff416c';
+            } else if (timeLeft > 10) {
+                progressElement.style.background = '#ffc107';
+            } else {
+                progressElement.style.background = '#28a745';
+            }
             
-            // Update accuracy meter
-            updateAccuracyMeter(accuracy);
+            setTimeout(updateTimer, 1000);
+        }
+    }
+    
+    // CHECK 1: Fake GPS Detection
+    async function checkForFakeGPS() {
+        return new Promise((resolve) => {
+            const checks = {
+                hasAltitude: false,
+                hasSpeed: false,
+                hasHeading: false,
+                accuracy: null,
+                isSuspicious: false,
+                reasons: []
+            };
             
-            // If we get under 5 meters, consider stopping
-            if (accuracy <= 5) {
-                showStatus('✅ TARGET ACHIEVED: Under 5 meters accuracy!', 'good');
-                
-                // Continue for a bit more to see if we can get even better
-                if (accuracy <= 2) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const coords = position.coords;
+                    
+                    // Check 1: Perfect accuracy (common in fake GPS)
+                    if (coords.accuracy < 2) {
+                        checks.isSuspicious = true;
+                        checks.reasons.push(`Perfect accuracy: ${coords.accuracy}m (Fake GPS apps often show <2m)`);
+                    }
+                    
+                    // Check 2: No altitude data (common in fake GPS)
+                    if (coords.altitude === null || coords.altitude === 0) {
+                        checks.isSuspicious = true;
+                        checks.reasons.push('No altitude data (Real GPS always has altitude)');
+                    } else {
+                        checks.hasAltitude = true;
+                    }
+                    
+                    // Check 3: No speed/heading data (common in fake GPS)
+                    if (coords.speed === null) {
+                        checks.isSuspicious = true;
+                        checks.reasons.push('No speed data (Real GPS has movement data)');
+                    } else {
+                        checks.hasSpeed = true;
+                    }
+                    
+                    if (coords.heading === null) {
+                        checks.reasons.push('No heading data');
+                    } else {
+                        checks.hasHeading = true;
+                    }
+                    
+                    // Check 4: Multiple readings consistency
                     setTimeout(() => {
-                        finishScan(true);
-                    }, 5000); // Wait 5 more seconds for possible improvement
+                        navigator.geolocation.getCurrentPosition(
+                            (secondPosition) => {
+                                const distance = calculateDistance(
+                                    coords.latitude, coords.longitude,
+                                    secondPosition.coords.latitude, secondPosition.coords.longitude
+                                );
+                                
+                                // Real GPS has small variations, fake GPS is often static
+                                if (distance < 1 && coords.accuracy < 5) {
+                                    checks.isSuspicious = true;
+                                    checks.reasons.push(`GPS completely static (${distance.toFixed(2)}m movement - too perfect)`);
+                                }
+                                
+                                checks.accuracy = coords.accuracy;
+                                checks.position = position;
+                                resolve(checks);
+                            },
+                            () => resolve(checks),
+                            { enableHighAccuracy: true, timeout: 5000 }
+                        );
+                    }, 3000);
+                },
+                (error) => {
+                    checks.isSuspicious = true;
+                    checks.reasons.push(`GPS error: ${error.message}`);
+                    resolve(checks);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
                 }
+            );
+        });
+    }
+    
+    // CHECK 2: IP Location vs GPS
+    async function checkIPLocation() {
+        try {
+            const response = await fetch('https://ipapi.co/json/');
+            const ipData = await response.json();
+            
+            // Get GPS location for comparison
+            const gpsPosition = await new Promise((resolve) => {
+                navigator.geolocation.getCurrentPosition(resolve, () => resolve(null), { timeout: 5000 });
+            });
+            
+            let distance = null;
+            if (gpsPosition && ipData.latitude) {
+                distance = calculateDistance(
+                    gpsPosition.coords.latitude, gpsPosition.coords.longitude,
+                    ipData.latitude, ipData.longitude
+                );
+            }
+            
+            // Check if IP is from VPN/Hosting
+            const isp = ipData.org || '';
+            const ispLower = isp.toLowerCase();
+            const isVPN = ispLower.includes('vpn') || ispLower.includes('proxy') || ispLower.includes('tor');
+            const isHosting = ispLower.includes('hosting') || ispLower.includes('datacenter') || 
+                            ispLower.includes('aws') || ispLower.includes('google cloud') || 
+                            ispLower.includes('azure') || ispLower.includes('digitalocean');
+            
+            return {
+                distance: distance,
+                isVPN: isVPN,
+                isHosting: isHosting,
+                isp: isp,
+                city: ipData.city,
+                country: ipData.country_name,
+                ip: ipData.ip
+            };
+            
+        } catch (error) {
+            return { error: 'IP check failed', isVPN: false, isHosting: false };
+        }
+    }
+    
+    // CHECK 3: VPN Detection
+    async function checkForVPN() {
+        try {
+            // Multiple VPN detection methods
+            const [ipapiResponse, ipinfoResponse] = await Promise.all([
+                fetch('https://ipapi.co/json/').then(r => r.json()),
+                fetch('https://ipinfo.io/json').then(r => r.json())
+            ]);
+            
+            const isp = ipapiResponse.org || ipinfoResponse.org || '';
+            const ispLower = isp.toLowerCase();
+            
+            // VPN/Proxy keywords
+            const vpnKeywords = ['vpn', 'proxy', 'tor', 'anonymizer', 'privacy', 'hide', 'mask'];
+            const hostingKeywords = ['hosting', 'datacenter', 'server', 'cloud', 'aws', 'azure', 'google', 'digitalocean', 'linode', 'vultr'];
+            
+            const isVPN = vpnKeywords.some(keyword => ispLower.includes(keyword));
+            const isHosting = hostingKeywords.some(keyword => ispLower.includes(keyword));
+            
+            // Check if IP is residential (less likely to be fake GPS)
+            const isResidential = !isVPN && !isHosting && 
+                                (ispLower.includes('mobile') || 
+                                 ispLower.includes('telecom') || 
+                                 ispLower.includes('communications') ||
+                                 ispLower.includes('broadband') ||
+                                 isp === '');
+            
+            return {
+                isVPN: isVPN,
+                isHosting: isHosting,
+                isResidential: isResidential,
+                isp: isp
+            };
+            
+        } catch (error) {
+            return { isVPN: false, isHosting: false, isResidential: false, error: 'VPN check failed' };
+        }
+    }
+    
+    // CHECK 4: Coordinate Patterns
+    async function checkCoordinatesPattern() {
+        return new Promise((resolve) => {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    
+                    // Common fake GPS patterns
+                    const patterns = {
+                        // Too few decimal places (common in fake GPS)
+                        fewDecimals: (lat.toString().split('.')[1] || '').length < 5 || 
+                                    (lon.toString().split('.')[1] || '').length < 5,
+                        
+                        // Popular fake locations (common coordinates in fake GPS apps)
+                        isPopularFakeLocation: isPopularFakeLocation(lat, lon),
+                        
+                        // Exact integer or half-degree (suspicious)
+                        isExactDegree: lat % 1 === 0 || lon % 1 === 0 || 
+                                      lat % 0.5 === 0 || lon % 0.5 === 0,
+                        
+                        // Coordinates too "round"
+                        isRound: isCoordinateTooRound(lat) || isCoordinateTooRound(lon)
+                    };
+                    
+                    let isSuspicious = false;
+                    let reasons = [];
+                    
+                    if (patterns.fewDecimals) {
+                        isSuspicious = true;
+                        reasons.push('Coordinates have too few decimal places');
+                    }
+                    
+                    if (patterns.isPopularFakeLocation) {
+                        isSuspicious = true;
+                        reasons.push('Coordinates match known fake GPS locations');
+                    }
+                    
+                    if (patterns.isExactDegree) {
+                        isSuspicious = true;
+                        reasons.push('Coordinates are exact degrees (suspicious)');
+                    }
+                    
+                    resolve({
+                        isSuspicious: isSuspicious,
+                        reasons: reasons,
+                        patterns: patterns,
+                        coordinates: { lat: lat, lon: lon }
+                    });
+                },
+                () => resolve({ isSuspicious: false, reasons: ['Failed to get coordinates'] }),
+                { timeout: 5000 }
+            );
+        });
+    }
+    
+    // Check if coordinates match popular fake locations
+    function isPopularFakeLocation(lat, lon) {
+        const popularFakes = [
+            // Times Square, New York
+            { lat: 40.7580, lon: -73.9855, radius: 0.01 },
+            // Eiffel Tower, Paris
+            { lat: 48.8584, lon: 2.2945, radius: 0.01 },
+            // Tokyo Tower
+            { lat: 35.6586, lon: 139.7454, radius: 0.01 },
+            // Sydney Opera House
+            { lat: -33.8568, lon: 151.2153, radius: 0.01 },
+            // Popular fake GPS app defaults
+            { lat: 37.4219999, lon: -122.0840575 }, // Google HQ
+            { lat: 51.509865, lon: -0.118092 }, // London
+            { lat: 34.052235, lon: -118.243683 }, // Los Angeles
+        ];
+        
+        return popularFakes.some(loc => {
+            const distance = calculateDistance(lat, lon, loc.lat, loc.lon);
+            return distance < (loc.radius || 0.02) * 111000; // Convert degrees to meters
+        });
+    }
+    
+    // Check if coordinate is too "round"
+    function isCoordinateTooRound(num) {
+        const str = num.toString();
+        const decimalPart = str.split('.')[1] || '';
+        
+        // Check for repeating patterns like 40.12345678
+        if (decimalPart.length >= 4) {
+            const lastFour = decimalPart.slice(-4);
+            return /^(\d)\1{3}$/.test(lastFour); // Like 1111, 2222, etc.
+        }
+        
+        return false;
+    }
+    
+    // Analyze all checks
+    function analyzeFakeGPS(checks) {
+        const [gpsCheck, ipCheck, vpnCheck, coordCheck] = checks;
+        
+        let fakeScore = 0;
+        let reasons = [];
+        
+        // GPS check analysis (40 points)
+        if (gpsCheck.isSuspicious) {
+            fakeScore += 40;
+            reasons = reasons.concat(gpsCheck.reasons);
+        }
+        
+        // IP vs GPS distance (20 points)
+        if (ipCheck.distance !== null) {
+            if (ipCheck.distance > 100000) { // >100km difference
+                fakeScore += 20;
+                reasons.push(`GPS vs IP distance: ${Math.round(ipCheck.distance/1000)}km (too large)`);
+            } else if (ipCheck.distance < 1000) { // <1km (suspiciously perfect)
+                fakeScore += 10;
+                reasons.push('GPS and IP match perfectly (suspicious)');
             }
         }
         
-        // Auto-stop conditions
-        if (elapsed >= 90) { // Max 90 seconds
-            finishScan(bestAccuracy <= 20);
-        } else if (accuracy <= 1 && elapsed >= 10) { // Got military-grade accuracy
-            finishScan(true);
+        // VPN/Hosting (20 points)
+        if (vpnCheck.isVPN || vpnCheck.isHosting) {
+            fakeScore += 20;
+            reasons.push(`VPN/Hosting detected: ${vpnCheck.isp}`);
         }
+        
+        // Coordinate patterns (20 points)
+        if (coordCheck.isSuspicious) {
+            fakeScore += 20;
+            reasons = reasons.concat(coordCheck.reasons);
+        }
+        
+        // Determine result
+        const isFake = fakeScore >= 40; // 40+ points = likely fake
+        
+        return {
+            isFake: isFake,
+            fakeScore: fakeScore,
+            reasons: reasons,
+            gpsData: gpsCheck,
+            ipData: ipCheck,
+            vpnData: vpnCheck,
+            coordData: coordCheck
+        };
     }
     
-    // Handle position errors
-    function handlePositionError(error) {
-        let message = 'GPS Error: ';
-        switch(error.code) {
-            case error.PERMISSION_DENIED:
-                message = '🚫 Location access denied. Please enable location services.';
-                break;
-            case error.POSITION_UNAVAILABLE:
-                message = '⚠️ GPS signal weak. Go OUTSIDE with clear sky view.';
-                break;
-            case error.TIMEOUT:
-                message = '⏰ GPS timeout. Make sure high accuracy mode is enabled.';
-                break;
-        }
-        showStatus(message, 'error');
-        finishScan(false);
-    }
-    
-    // Update progress indicator
-    function updateProgress() {
-        if (!isScanning) return;
+    // Show results
+    function showResults(analysis, checks) {
+        const [gpsCheck, ipCheck, vpnCheck, coordCheck] = checks;
+        const resultDiv = document.getElementById('result');
         
-        const elapsed = (Date.now() - scanStartTime) / 1000;
+        let resultClass = 'result-real';
+        let resultTitle = '✅ REAL GPS DETECTED';
+        let resultIcon = '✅';
         
-        // Update status every 5 seconds
-        if (Math.floor(elapsed) % 5 === 0 && elapsed < 30) {
-            showStatus(`⏱️ Scanning... ${elapsed.toFixed(0)}s elapsed`, 'info');
+        if (analysis.isFake) {
+            resultClass = 'result-fake';
+            resultTitle = '🚨 FAKE GPS DETECTED';
+            resultIcon = '🚨';
         }
         
-        // Auto-update
-        setTimeout(updateProgress, 1000);
-    }
-    
-    // Finish the scan
-    function finishScan(success) {
-        if (!isScanning) return;
-        
-        isScanning = false;
-        
-        if (watchId !== null) {
-            navigator.geolocation.clearWatch(watchId);
-            watchId = null;
-        }
-        
-        // Update button
-        const btn = document.querySelector('.btn');
-        btn.innerHTML = '🎯 START HIGH-ACCURACY SCAN';
-        btn.disabled = false;
-        
-        if (success && bestPosition) {
-            // Analyze and display results
-            analyzeAndDisplayResults(bestPosition);
-        } else {
-            showStatus('❌ Failed to achieve high accuracy. Try going OUTSIDE.', 'error');
-            showAccuracyTips();
-        }
-    }
-    
-    // Analyze and display results
-    function analyzeAndDisplayResults(position) {
-        const accuracy = position.coords.accuracy;
-        const elapsed = (Date.now() - scanStartTime) / 1000;
-        
-        // Get accuracy badge
-        const accuracyBadge = getAccuracyBadge(accuracy);
-        
-        // Check for fake GPS indicators
-        const isFake = checkForFakeGPS(position);
-        
-        // Generate results HTML
-        let resultsHTML = `
-            <div class="result-box">
-                <h2 style="margin-top: 0; color: #2D8CFF;">🎯 SCAN COMPLETE</h2>
-                
-                <div class="metric">
-                    <span>Final Accuracy:</span>
-                    <div>
-                        <span class="metric-value">${Math.round(accuracy)} meters</span>
-                        <span class="accuracy-badge ${accuracyBadge.class}">${accuracyBadge.text}</span>
-                    </div>
-                </div>
-                
-                <div class="metric">
-                    <span>Scan Time:</span>
-                    <span class="metric-value">${elapsed.toFixed(1)} seconds</span>
-                </div>
-                
-                <div class="metric">
-                    <span>Altitude:</span>
-                    <span class="metric-value">${position.coords.altitude ? Math.round(position.coords.altitude) + 'm' : 'N/A'}</span>
-                </div>
-                
-                <div class="metric">
-                    <span>Speed:</span>
-                    <span class="metric-value">${position.coords.speed ? (position.coords.speed * 3.6).toFixed(1) + ' km/h' : '0 km/h'}</span>
-                </div>
-                
-                <div class="metric">
-                    <span>Satellites (est.):</span>
-                    <span class="metric-value">${estimateSatellites(accuracy)}</span>
-                </div>
+        // Build results HTML
+        let html = `
+            <h3>${resultIcon} ${resultTitle}</h3>
+            <p style="margin: 15px 0; font-size: 20px; font-weight: bold; color: ${analysis.isFake ? '#dc3545' : '#28a745'}">
+                Fake Score: ${analysis.fakeScore}/100
+            </p>
+            
+            <div class="check-item">
+                <span>GPS Data Quality:</span>
+                <span class="check-status ${gpsCheck.isSuspicious ? 'check-bad' : 'check-good'}">
+                    ${gpsCheck.isSuspicious ? '❌' : '✅'}
+                </span>
+            </div>
+            
+            <div class="check-item">
+                <span>VPN/Proxy:</span>
+                <span class="check-status ${vpnCheck.isVPN || vpnCheck.isHosting ? 'check-bad' : 'check-good'}">
+                    ${vpnCheck.isVPN || vpnCheck.isHosting ? '❌' : '✅'}
+                </span>
+            </div>
+            
+            <div class="check-item">
+                <span>Coordinate Patterns:</span>
+                <span class="check-status ${coordCheck.isSuspicious ? 'check-bad' : 'check-good'}">
+                    ${coordCheck.isSuspicious ? '❌' : '✅'}
+                </span>
+            </div>
+            
+            <div class="check-item">
+                <span>ISP Type:</span>
+                <span class="check-status ${vpnCheck.isResidential ? 'check-good' : 'check-warning'}">
+                    ${vpnCheck.isResidential ? '✅ Residential' : '⚠️ Non-Residential'}
+                </span>
+            </div>
         `;
         
-        // Fake GPS detection
-        if (isFake.detected) {
-            resultsHTML += `
-                <div style="margin: 20px 0; padding: 15px; background: #f8d7da; border-radius: 10px; color: #721c24;">
-                    <h3 style="margin-top: 0; color: #dc3545;">🚨 FAKE GPS DETECTED!</h3>
-                    <p>${isFake.reason}</p>
-                    <p><strong>Accuracy too perfect for normal GPS.</strong></p>
-                </div>
-            `;
-        } else if (accuracy <= 5) {
-            resultsHTML += `
-                <div style="margin: 20px 0; padding: 15px; background: #d4edda; border-radius: 10px; color: #155724;">
-                    <h3 style="margin-top: 0; color: #28a745;">✅ GENUINE HIGH ACCURACY GPS</h3>
-                    <p>This accuracy level is only achievable with real GPS signal.</p>
-                </div>
-            `;
+        // Show reasons if fake
+        if (analysis.reasons.length > 0) {
+            html += `<div style="margin: 20px 0; padding: 15px; background: white; border-radius: 10px;">`;
+            html += `<h4>🔍 Findings:</h4><ul style="padding-left: 20px; margin-top: 10px;">`;
+            analysis.reasons.forEach(reason => {
+                html += `<li style="margin-bottom: 5px;">${reason}</li>`;
+            });
+            html += `</ul></div>`;
         }
         
-        // Coordinates
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-        const mapUrl = `https://www.google.com/maps?q=${lat},${lon}&z=18`;
-        
-        resultsHTML += `
-                <h3>📍 Coordinates:</h3>
-                <div style="background: white; padding: 15px; border-radius: 10px; margin: 15px 0;">
-                    <p><strong>Latitude:</strong> ${lat.toFixed(8)}</p>
-                    <p><strong>Longitude:</strong> ${lon.toFixed(8)}</p>
-                    <p><a href="${mapUrl}" target="_blank" style="color: #2D8CFF; text-decoration: none;">
-                        🗺️ View on Google Maps (Zoomed)
-                    </a></p>
+        // Show coordinates
+        if (gpsCheck.position) {
+            const pos = gpsCheck.position.coords;
+            const lat = pos.latitude;
+            const lon = pos.longitude;
+            const mapUrl = `https://maps.google.com/?q=${lat},${lon}`;
+            
+            html += `
+                <div class="coordinates">
+                    <strong>📍 Coordinates:</strong><br>
+                    Latitude: ${lat.toFixed(8)}<br>
+                    Longitude: ${lon.toFixed(8)}<br>
+                    Accuracy: ${Math.round(pos.accuracy)} meters<br>
+                    Altitude: ${pos.altitude ? Math.round(pos.altitude) + 'm' : 'No data'}<br>
+                    <br>
+                    <strong>🌐 IP Location:</strong><br>
+                    ${ipCheck.city ? `${ipCheck.city}, ${ipCheck.country}` : 'Unknown'}<br>
+                    ISP: ${ipCheck.isp || 'Unknown'}
                 </div>
-        `;
-        
-        // Copy to clipboard section
-        const timestamp = new Date().toISOString();
-        const message = `📍 MILITARY-GRADE GPS VERIFICATION
-Accuracy: ${Math.round(accuracy)} meters (${accuracyBadge.text})
-Latitude: ${lat.toFixed(8)}
-Longitude: ${lon.toFixed(8)}
-Altitude: ${position.coords.altitude ? Math.round(position.coords.altitude) + 'm' : 'N/A'}
+                
+                <textarea id="locationText" style="width:100%; padding:15px; border-radius:10px; margin:15px 0; font-family:monospace;" rows="4">
+📍 Location Verification | ${analysis.isFake ? 'FAKE GPS DETECTED' : 'VERIFIED REAL LOCATION'}
+Coordinates: ${lat.toFixed(6)}, ${lon.toFixed(6)}
+Accuracy: ${Math.round(pos.accuracy)}m | Altitude: ${pos.altitude ? Math.round(pos.altitude) + 'm' : 'N/A'}
+IP Location: ${ipCheck.city || 'Unknown'}, ${ipCheck.country || 'Unknown'}
+ISP: ${ipCheck.isp || 'Unknown'}
 Time: ${new Date().toLocaleString()}
 Map: ${mapUrl}
-${isFake.detected ? '🚨 WARNING: FAKE GPS DETECTED' : '✅ VERIFIED: Genuine GPS Signal'}`;
-        
-        resultsHTML += `
-                <h3>📋 Copy for Rocket.Chat:</h3>
-                <textarea id="locationText">${message}</textarea>
-                <button class="btn" onclick="copyToClipboard()">📋 COPY VERIFIED LOCATION</button>
+                </textarea>
                 
-                ${accuracy > 5 ? `
-                <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 10px;">
-                    <h4>🎯 Need better accuracy?</h4>
-                    <p>For under 5 meters:</p>
-                    <ul>
-                        <li>Move to OPEN FIELD with no buildings</li>
-                        <li>Hold phone FLAT (screen facing sky)</li>
-                        <li>Wait 1-2 minutes for GPS to stabilize</li>
-                        <li>Enable WiFi (even if not connected)</li>
-                    </ul>
-                </div>
-                ` : ''}
-            </div>
-        `;
+                <button class="copy-btn" onclick="copyToClipboard()">📋 Copy to Rocket.Chat</button>
+            `;
+        }
         
-        document.getElementById('results').innerHTML = resultsHTML;
+        resultDiv.innerHTML = html;
+        resultDiv.className = `result ${resultClass}`;
+        resultDiv.style.display = 'block';
         
         // Scroll to results
-        document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        resultDiv.scrollIntoView({ behavior: 'smooth' });
     }
     
-    // Check for fake GPS indicators
-    function checkForFakeGPS(position) {
-        const accuracy = position.coords.accuracy;
+    // Utility functions
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371000;
+        const φ1 = lat1 * Math.PI/180;
+        const φ2 = lat2 * Math.PI/180;
+        const Δφ = (lat2-lat1) * Math.PI/180;
+        const Δλ = (lon2-lon1) * Math.PI/180;
         
-        // Too perfect accuracy (fake GPS apps often give 0-1m)
-        if (accuracy < 1 && !position.coords.altitude && !position.coords.speed) {
-            return {
-                detected: true,
-                reason: "Accuracy less than 1 meter with no altitude/speed data is highly suspicious."
-            };
-        }
+        const a = Math.sin(Δφ/2)*Math.sin(Δφ/2) +
+                Math.cos(φ1)*Math.cos(φ2)*
+                Math.sin(Δλ/2)*Math.sin(Δλ/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         
-        // Perfect round numbers (common in fake GPS)
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-        const latDecimals = lat.toString().split('.')[1] || '';
-        const lonDecimals = lon.toString().split('.')[1] || '';
-        
-        if (latDecimals.length < 5 || lonDecimals.length < 5) {
-            return {
-                detected: true,
-                reason: "Coordinates have too few decimal places (common in fake GPS)."
-            };
-        }
-        
-        // Altitude exactly 0 (common in fake GPS)
-        if (position.coords.altitude === 0 && accuracy < 5) {
-            return {
-                detected: true,
-                reason: "Altitude exactly 0 with high accuracy is suspicious."
-            };
-        }
-        
-        return { detected: false, reason: '' };
+        return R * c;
     }
     
-    // Get accuracy status
-    function getAccuracyStatus(accuracy) {
-        if (accuracy <= 1) return 'good';
-        if (accuracy <= 5) return 'good';
-        if (accuracy <= 20) return 'warning';
-        return 'error';
-    }
-    
-    // Get accuracy badge
-    function getAccuracyBadge(accuracy) {
-        if (accuracy <= 1) return { class: 'badge-excellent', text: 'MILITARY GRADE' };
-        if (accuracy <= 3) return { class: 'badge-excellent', text: 'EXCELLENT' };
-        if (accuracy <= 5) return { class: 'badge-excellent', text: 'VERY GOOD' };
-        if (accuracy <= 10) return { class: 'badge-good', text: 'GOOD' };
-        if (accuracy <= 20) return { class: 'badge-fair', text: 'FAIR' };
-        return { class: 'badge-poor', text: 'NEEDS IMPROVEMENT' };
-    }
-    
-    // Estimate satellites based on accuracy
-    function estimateSatellites(accuracy) {
-        if (accuracy <= 1) return '10+ (Excellent)';
-        if (accuracy <= 3) return '7-9 (Very Good)';
-        if (accuracy <= 5) return '5-7 (Good)';
-        if (accuracy <= 10) return '4-5 (Fair)';
-        return '1-3 (Poor)';
-    }
-    
-    // Update accuracy meter
-    function updateAccuracyMeter(accuracy) {
-        const meter = document.querySelector('.accuracy-meter');
-        
-        // Calculate position (0-100%)
-        let position = 0;
-        if (accuracy >= 50) position = 0;
-        else if (accuracy >= 20) position = 25;
-        else if (accuracy >= 5) position = 50;
-        else if (accuracy >= 1) position = 75;
-        else position = 100;
-        
-        // Create marker
-        const existingMarker = meter.querySelector('.current-marker');
-        if (existingMarker) existingMarker.remove();
-        
-        const marker = document.createElement('div');
-        marker.className = 'current-marker';
-        marker.style.position = 'absolute';
-        marker.style.top = '-8px';
-        marker.style.left = position + '%';
-        marker.style.width = '6px';
-        marker.style.height = '24px';
-        marker.style.background = '#2D8CFF';
-        marker.style.borderRadius = '3px';
-        marker.style.boxShadow = '0 0 10px rgba(42, 139, 242, 0.8)';
-        
-        meter.appendChild(marker);
-    }
-    
-    // Show accuracy tips
-    function showAccuracyTips() {
-        const tips = `
-            <div class="tip-box">
-                <h3>🎯 HOW TO GET UNDER 5 METERS:</h3>
-                <ol>
-                    <li><strong>GO OUTSIDE</strong> - No roofs, no tall buildings</li>
-                    <li><strong>Enable HIGH ACCURACY mode</strong> in phone settings</li>
-                    <li><strong>Turn on WiFi</strong> (helps even if not connected)</li>
-                    <li><strong>Enable Mobile Data</strong></li>
-                    <li><strong>Hold phone FLAT</strong> - screen facing the sky</li>
-                    <li><strong>Wait 1-2 minutes</strong> for GPS to stabilize</li>
-                    <li><strong>Avoid moving</strong> during scan</li>
-                </ol>
-                <p><strong>iPhone:</strong> Settings → Privacy → Location Services → ON</p>
-                <p><strong>Android:</strong> Settings → Location → Mode → High Accuracy</p>
-            </div>
-        `;
-        
-        document.getElementById('results').innerHTML = tips;
-    }
-    
-    // Show status message
-    function showStatus(message, type) {
-        const statusDiv = document.getElementById('status');
-        const statusElement = document.createElement('div');
-        statusElement.className = `status status-${type}`;
-        statusElement.innerHTML = message;
-        
-        // Add to top
-        statusDiv.insertBefore(statusElement, statusDiv.firstChild);
-        
-        // Auto-remove old messages (keep last 5)
-        const messages = statusDiv.querySelectorAll('.status');
-        if (messages.length > 5) {
-            messages[messages.length - 1].remove();
-        }
-    }
-    
-    // Copy to clipboard
     function copyToClipboard() {
         const textarea = document.getElementById('locationText');
         textarea.select();
@@ -638,26 +735,17 @@ ${isFake.detected ? '🚨 WARNING: FAKE GPS DETECTED' : '✅ VERIFIED: Genuine G
         
         const btn = event.target;
         const original = btn.innerHTML;
-        btn.innerHTML = '✅ COPIED!';
-        btn.style.background = 'linear-gradient(135deg, #28a745, #1e7e34)';
-        
-        setTimeout(() => {
-            btn.innerHTML = original;
-            btn.style.background = 'linear-gradient(135deg, #2D8CFF, #0066CC)';
-        }, 2000);
+        btn.innerHTML = '✅ Copied!';
+        setTimeout(() => btn.innerHTML = original, 2000);
     }
     
     // Initialize
     window.addEventListener('load', () => {
-        // Check if geolocation is supported
-        if (!navigator.geolocation) {
-            alert('❌ Your browser does not support GPS. Please use Chrome on Android or Safari on iPhone.');
-        }
-        
-        // Detect device
+        // Auto-start on mobile for convenience
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        if (!isMobile) {
-            showStatus('⚠️ For best results, use a MOBILE PHONE with real GPS chip', 'warning');
+        if (isMobile) {
+            document.querySelector('.warning').innerHTML += 
+                '<p style="margin-top:10px;"><strong>📱 Mobile detected:</strong> Ready for quick verification</p>';
         }
     });
     </script>
